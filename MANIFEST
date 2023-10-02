@@ -6,6 +6,7 @@
 #   - gui with fltk?
 
 debsearch.go
+consts.go
 
 debsearch_test.go
 
