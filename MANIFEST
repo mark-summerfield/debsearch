@@ -6,6 +6,8 @@
 #	-s|--sections sect1,sect2,... 
 #	-t|--tags tag1,tag2,...
 #	remaining words are ones to match and-ed together
+#     -or-
+#       --list-sections | --list-tags
 #   - tui with bubbletea?
 #   - gui with fltk?
 
