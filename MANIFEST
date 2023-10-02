@@ -1,5 +1,5 @@
 # Go version of DebFind
-# use classifier filters: app|lib|dat|doc and for app: gui|tui|cli
+# use tag filters (the *Packages have the tags I need)
 # UIs:
 #   - cli?
 #   - tui with bubbletea?
