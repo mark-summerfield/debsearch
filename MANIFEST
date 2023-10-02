@@ -1,7 +1,11 @@
 # Go version of DebFind
 # use tag filters (the *Packages have the tags I need)
 # UIs:
-#   - cli?
+#   - cli
+#	-u|--ui gui|tui|cli
+#	-s|--sections sect1,sect2,... 
+#	-t|--tags tag1,tag2,...
+#	remaining words are ones to match and-ed together
 #   - tui with bubbletea?
 #   - gui with fltk?
 
