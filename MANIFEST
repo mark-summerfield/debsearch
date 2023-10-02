@@ -1,3 +1,10 @@
+# Go version of DebFind
+# use classifier filters: app|lib|dat|doc and for app: gui|tui|cli
+# UIs:
+#   - cli?
+#   - tui with bubbletea?
+#   - gui with fltk?
+
 debsearch.go
 
 debsearch_test.go
