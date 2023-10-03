@@ -12,7 +12,11 @@
 #   - gui with fltk?
 
 debsearch.go
+pkg.go
+parsers.go
+util.go
 consts.go
+cmd/cli/debsearch.go
 
 debsearch_test.go
 
