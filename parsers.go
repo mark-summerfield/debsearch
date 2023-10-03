@@ -13,14 +13,15 @@ import (
 	"github.com/mark-summerfield/gong"
 )
 
-func readPackages(filename string, pkgs pkgs) error {
+func readPackages(filename string) (pkgs, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("%w: %s", Err101, err)
+		return nil, fmt.Errorf("%w: %s", Err101, err)
 	}
 	defer file.Close()
+	pkgs := pkgs{}
 	var name string
-	pkg := &pkg{}
+	pkg := NewPkg()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -42,7 +43,7 @@ func readPackages(filename string, pkgs pkgs) error {
 	if name != "" && pkg.HasEnoughInfo() {
 		pkgs[name] = pkg.Copy()
 	}
-	return nil
+	return pkgs, nil
 }
 
 func addTags(pkg *pkg, line string) {
@@ -74,12 +75,13 @@ func maybeAddKeyValue(pkg *pkg, line string) {
 	}
 }
 
-func readDescriptions(filename string, descForPkg map[string]string) error {
+func readDescriptions(filename string) (map[string]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("%w: %s", Err102, err)
+		return nil, fmt.Errorf("%w: %s", Err102, err)
 	}
 	defer file.Close()
+	descForPkg := map[string]string{}
 	name := ""
 	long_desc := ""
 	scanner := bufio.NewScanner(file)
@@ -105,5 +107,5 @@ func readDescriptions(filename string, descForPkg map[string]string) error {
 	if name != "" && long_desc != "" {
 		descForPkg[name] = long_desc
 	}
-	return nil
+	return descForPkg, nil
 }

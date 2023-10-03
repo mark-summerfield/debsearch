@@ -21,6 +21,8 @@ type pkg struct {
 	long_desc     string
 }
 
+func NewPkg() *pkg { return &pkg{tags: gset.New[string]()} }
+
 func (me *pkg) Copy() *pkg {
 	return &pkg{version: me.version, size: me.size,
 		download_size: me.download_size, url: me.url, section: me.section,

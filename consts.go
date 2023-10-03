@@ -12,12 +12,6 @@ const (
 )
 
 var (
-	packageGlobs = []string{
-		"*contrib_binary*_Packages",
-		"*main_binary*_Packages",
-		"*non-free_binary*_Packages",
-	}
-
 	Err101 = errors.New("E101: failed to open packages file")
 	Err102 = errors.New("E102: failed to open descriptions file")
 	Err103 = errors.New("E103: no package files given")
