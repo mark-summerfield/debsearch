@@ -7,7 +7,7 @@
 #	-t|--tags tag1,tag2,...
 #	remaining words are ones to match and-ed together
 #     -or-
-#       --list-sections | --list-tags
+#       -i|--info list sections, tags, and stats
 #   - tui with bubbletea?
 #   - gui with fltk?
 
