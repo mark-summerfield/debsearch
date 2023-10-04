@@ -1,12 +1,5 @@
-# use tag filters (the *Packages have the tags I need)
 # UIs:
 #   - cli
-#	-u|--ui gui|tui|cli
-#	-s|--sections sect1,sect2,... 
-#	-t|--tags tag1,tag2,...
-#	remaining words are ones to match and-ed together
-#     -or-
-#       -i|--info list sections, tags, and stats
 #   - tui with bubbletea?
 #   - gui with fltk?
 
@@ -15,7 +8,7 @@ pkg.go
 parser.go
 util.go
 consts.go
-cmd/cli/debsearch.go
+cmd/cli/debsearch.go # TODO search
 
 debsearch_test.go
 

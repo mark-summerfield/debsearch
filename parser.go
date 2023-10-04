@@ -69,6 +69,7 @@ func (me *parser) readPackages(filename string) {
 			me.pkgs.Pkgs[name] = pkg
 		}
 		me.pkgs.Sections.Unite(pkgs.Sections)
+		me.pkgs.Tags.Unite(pkgs.Tags)
 		me.pkgsMutex.Unlock()
 	}
 }
@@ -124,8 +125,10 @@ func readPackages(filename string) (pkgs, error) {
 func addTags(pkg *pkg, line string, pkgs *pkgs) {
 	for _, item := range strings.Split(line, ",") {
 		item = strings.TrimSpace(item)
-		pkg.Tags.Add(item)
-		pkgs.Tags.Add(item)
+		if item != "" {
+			pkg.Tags.Add(item)
+			pkgs.Tags.Add(item)
+		}
 	}
 }
 
@@ -133,22 +136,24 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *pkgs) {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
-		switch key {
-		case "Description":
-			pkg.ShortDesc = value
-		case "Homepage":
-			pkg.Url = value
-		case "Installed-Size":
-			pkg.Size = gong.StrToInt(value, 0)
-		case "Section":
-			pkg.Section = value
-			pkgs.Sections.Add(value)
-		case "Size":
-			pkg.DownloadSize = gong.StrToInt(value, 0)
-		case "Tag":
-			addTags(pkg, value, pkgs)
-		case "Version":
-			pkg.Version = value
+		if value != "" {
+			switch key {
+			case "Description":
+				pkg.ShortDesc = value
+			case "Homepage":
+				pkg.Url = value
+			case "Installed-Size":
+				pkg.Size = gong.StrToInt(value, 0)
+			case "Section":
+				pkg.Section = value
+				pkgs.Sections.Add(value)
+			case "Size":
+				pkg.DownloadSize = gong.StrToInt(value, 0)
+			case "Tag":
+				addTags(pkg, value, pkgs)
+			case "Version":
+				pkg.Version = value
+			}
 		}
 	}
 }
