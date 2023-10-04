@@ -1,3 +1,6 @@
+# - refactor New to use Parser & refactor parser code
+# - add Tags and Sections sets
+#
 # Go version of DebFind
 # use tag filters (the *Packages have the tags I need)
 # UIs:
@@ -13,7 +16,7 @@
 
 debsearch.go
 pkg.go
-parsers.go
+parser.go
 util.go
 consts.go
 cmd/cli/debsearch.go
@@ -23,5 +26,8 @@ debsearch_test.go
 README.md
 
 st.sh
+
+# /var/lib/apt/lists/deb.debian.org_debian_dists_bullseye_main_binary-amd64_Packages
+# /var/lib/apt/lists/deb.debian.org_debian_dists_bullseye_main_i18n_Translation-en
 
 # vim: syn=yaml

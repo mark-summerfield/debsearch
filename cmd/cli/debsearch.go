@@ -13,7 +13,7 @@ import (
 
 func main() {
 	fmt.Printf("debsearch v%s\n", ds.Version)
-	pairs := ds.StdFilePairs()
+	pairs := ds.StdFilePairsWithDescriptions()
 	t := time.Now()
 	if pkgs, err := ds.NewPkgs(pairs...); err != nil {
 		panic(err)
