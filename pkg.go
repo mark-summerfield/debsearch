@@ -11,37 +11,37 @@ import (
 
 // Doesn't include `Package: name` since that's the map key.
 type pkg struct {
-	version       string
-	size          int
-	download_size int
-	url           string
-	section       string
-	tags          gset.Set[string]
-	short_desc    string
-	long_desc     string
+	Version      string
+	Size         int
+	DownloadSize int
+	Url          string
+	Section      string
+	Tags         gset.Set[string]
+	ShortDesc    string
+	LongDesc     string
 }
 
-func NewPkg() *pkg { return &pkg{tags: gset.New[string]()} }
+func NewPkg() *pkg { return &pkg{Tags: gset.New[string]()} }
 
 func (me *pkg) Copy() *pkg {
-	return &pkg{version: me.version, size: me.size,
-		download_size: me.download_size, url: me.url, section: me.section,
-		tags: me.tags.Copy(), short_desc: me.short_desc,
-		long_desc: me.long_desc}
+	return &pkg{Version: me.Version, Size: me.Size,
+		DownloadSize: me.DownloadSize, Url: me.Url, Section: me.Section,
+		Tags: me.Tags.Copy(), ShortDesc: me.ShortDesc,
+		LongDesc: me.LongDesc}
 }
 
 func (me *pkg) Clear() {
-	me.version = ""
-	me.size = 0
-	me.download_size = 0
-	me.url = ""
-	me.section = ""
-	me.tags.Clear()
-	me.short_desc = ""
-	me.long_desc = ""
+	me.Version = ""
+	me.Size = 0
+	me.DownloadSize = 0
+	me.Url = ""
+	me.Section = ""
+	me.Tags.Clear()
+	me.ShortDesc = ""
+	me.LongDesc = ""
 }
 
-func (me *pkg) HasEnoughInfo() bool {
-	return me.version != "" && me.size > 0 && me.section != "" &&
-		me.short_desc != ""
+func (me *pkg) IsValid() bool {
+	return me.Version != "" && me.Size > 0 && me.Section != "" &&
+		me.ShortDesc != ""
 }

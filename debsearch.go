@@ -34,6 +34,8 @@ func NewPkgs(filepairs ...FilePair) (pkgs, error) {
 	if len(filepairs) == 0 {
 		return nil, Err103
 	}
+	// TODO put all this in a Parsers type so we can use me.pkgsMutex etc. &
+	// refactor
 	var errs error
 	var errMutex sync.Mutex
 	pkgs := pkgs{}
@@ -79,7 +81,7 @@ func NewPkgs(filepairs ...FilePair) (pkgs, error) {
 	}
 	wg.Wait()
 	for name, long_desc := range descForPkgs { // merge
-		pkgs[name].long_desc = long_desc
+		pkgs[name].LongDesc = long_desc
 	}
 	return pkgs, errs
 }

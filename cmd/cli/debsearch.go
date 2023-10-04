@@ -8,6 +8,7 @@ import (
 	"time"
 
 	ds "github.com/mark-summerfield/debsearch"
+	"github.com/mark-summerfield/gong"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 		panic(err)
 	} else {
 		elapsed := time.Since(t)
-		fmt.Printf("found %d pkgs in %s\n", len(pkgs), elapsed)
+		fmt.Printf("found %s pkgs in %s\n", gong.Commas(len(pkgs)), elapsed)
 		//i := 0
 		//for name, pkg := range pkgs {
 		//	fmt.Println(name, pkg)

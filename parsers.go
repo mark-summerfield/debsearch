@@ -29,7 +29,7 @@ func readPackages(filename string) (pkgs, error) {
 			continue
 		}
 		if strings.HasPrefix(line, packagePrefix) {
-			if name != "" && pkg.HasEnoughInfo() {
+			if name != "" && pkg.IsValid() {
 				pkgs[name] = pkg.Copy()
 				pkg.Clear()
 			}
@@ -40,7 +40,7 @@ func readPackages(filename string) (pkgs, error) {
 			maybeAddKeyValue(pkg, line)
 		}
 	}
-	if name != "" && pkg.HasEnoughInfo() {
+	if name != "" && pkg.IsValid() {
 		pkgs[name] = pkg.Copy()
 	}
 	return pkgs, nil
@@ -48,7 +48,7 @@ func readPackages(filename string) (pkgs, error) {
 
 func addTags(pkg *pkg, line string) {
 	for _, item := range strings.Split(line, ",") {
-		pkg.tags.Add(strings.TrimSpace(item))
+		pkg.Tags.Add(strings.TrimSpace(item))
 	}
 }
 
@@ -58,19 +58,19 @@ func maybeAddKeyValue(pkg *pkg, line string) {
 		value = strings.TrimSpace(value)
 		switch key {
 		case "Description":
-			pkg.short_desc = value
+			pkg.ShortDesc = value
 		case "Homepage":
-			pkg.url = value
+			pkg.Url = value
 		case "Installed-Size":
-			pkg.size = gong.StrToInt(value, 0)
+			pkg.Size = gong.StrToInt(value, 0)
 		case "Section":
-			pkg.section = value
+			pkg.Section = value
 		case "Size":
-			pkg.download_size = gong.StrToInt(value, 0)
+			pkg.DownloadSize = gong.StrToInt(value, 0)
 		case "Tag":
 			addTags(pkg, value)
 		case "Version":
-			pkg.version = value
+			pkg.Version = value
 		}
 	}
 }
