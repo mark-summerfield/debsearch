@@ -1,7 +1,3 @@
-# - refactor New to use Parser & refactor parser code
-# - add Tags and Sections sets
-#
-# Go version of DebFind
 # use tag filters (the *Packages have the tags I need)
 # UIs:
 #   - cli

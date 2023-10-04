@@ -16,23 +16,19 @@ import (
 )
 
 type parser struct {
-	err              error
-	errMutex         sync.Mutex
 	pkgs             pkgs
 	pkgsMutex        sync.Mutex
+	err              error
+	errMutex         sync.Mutex
 	descForPkgs      map[string]string
 	descForPkgsMutex sync.Mutex
-	// TODO sections gset.Set[string]
-	// sectionsMutex sync.Mutex
-	// tags gset.Set[string]
-	// tagsMutex sync.Mutex
 }
 
 func parse(filepairs ...FilePair) (pkgs, error) {
 	if len(filepairs) == 0 {
-		return nil, Err103
+		return pkgs{}, Err103
 	}
-	parser := &parser{pkgs: pkgs{}, descForPkgs: map[string]string{}}
+	parser := &parser{pkgs: newPkgs(), descForPkgs: map[string]string{}}
 	return parser.parse(filepairs...)
 }
 
@@ -54,7 +50,7 @@ func (me *parser) parse(filepairs ...FilePair) (pkgs, error) {
 	}
 	wg.Wait()
 	for name, long_desc := range me.descForPkgs { // merge
-		if pkg, ok := me.pkgs[name]; ok {
+		if pkg, ok := me.pkgs.Pkgs[name]; ok {
 			pkg.LongDesc = long_desc
 		}
 	}
@@ -69,9 +65,10 @@ func (me *parser) readPackages(filename string) {
 		me.errMutex.Unlock()
 	} else {
 		me.pkgsMutex.Lock()
-		for name, pkg := range pkgs {
-			me.pkgs[name] = pkg
+		for name, pkg := range pkgs.Pkgs {
+			me.pkgs.Pkgs[name] = pkg
 		}
+		me.pkgs.Sections.Unite(pkgs.Sections)
 		me.pkgsMutex.Unlock()
 	}
 }
@@ -92,12 +89,12 @@ func (me *parser) readDescriptions(filename string) {
 }
 
 func readPackages(filename string) (pkgs, error) {
+	pkgs := newPkgs()
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", Err101, err)
+		return pkgs, fmt.Errorf("%w: %s", Err101, err)
 	}
 	defer file.Close()
-	pkgs := pkgs{}
 	var name string
 	pkg := NewPkg()
 	scanner := bufio.NewScanner(file)
@@ -108,29 +105,31 @@ func readPackages(filename string) (pkgs, error) {
 		}
 		if strings.HasPrefix(line, packagePrefix) {
 			if name != "" && pkg.IsValid() {
-				pkgs[name] = pkg.Copy()
+				pkgs.Pkgs[name] = pkg.Copy()
 				pkg.Clear()
 			}
 			name = strings.TrimSpace(line[packagePrefixLen:])
 		} else if strings.HasPrefix(line, " ") {
-			addTags(pkg, line)
+			addTags(pkg, line, &pkgs)
 		} else {
-			maybeAddKeyValue(pkg, line)
+			maybeAddKeyValue(pkg, line, &pkgs)
 		}
 	}
 	if name != "" && pkg.IsValid() {
-		pkgs[name] = pkg.Copy()
+		pkgs.Pkgs[name] = pkg.Copy()
 	}
 	return pkgs, nil
 }
 
-func addTags(pkg *pkg, line string) {
+func addTags(pkg *pkg, line string, pkgs *pkgs) {
 	for _, item := range strings.Split(line, ",") {
-		pkg.Tags.Add(strings.TrimSpace(item))
+		item = strings.TrimSpace(item)
+		pkg.Tags.Add(item)
+		pkgs.Tags.Add(item)
 	}
 }
 
-func maybeAddKeyValue(pkg *pkg, line string) {
+func maybeAddKeyValue(pkg *pkg, line string, pkgs *pkgs) {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
@@ -143,10 +142,11 @@ func maybeAddKeyValue(pkg *pkg, line string) {
 			pkg.Size = gong.StrToInt(value, 0)
 		case "Section":
 			pkg.Section = value
+			pkgs.Sections.Add(value)
 		case "Size":
 			pkg.DownloadSize = gong.StrToInt(value, 0)
 		case "Tag":
-			addTags(pkg, value)
+			addTags(pkg, value, pkgs)
 		case "Version":
 			pkg.Version = value
 		}

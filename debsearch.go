@@ -5,12 +5,23 @@ package debsearch
 
 import (
 	_ "embed"
+
+	"github.com/mark-summerfield/gset"
 )
 
 //go:embed Version.dat
 var Version string
 
-type pkgs map[string]*pkg
+type pkgs struct {
+	Pkgs     map[string]*pkg
+	Sections gset.Set[string]
+	Tags     gset.Set[string]
+}
+
+func newPkgs() pkgs {
+	return pkgs{Pkgs: map[string]*pkg{}, Sections: gset.New[string](),
+		Tags: gset.New[string]()}
+}
 
 func NewPkgs(filepairs ...FilePair) (pkgs, error) {
 	return parse(filepairs...)
