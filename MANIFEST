@@ -3,12 +3,12 @@
 #   - tui with bubbletea?
 #   - gui with fltk?
 
-debsearch.go
+debsearch.go # TODO SelectFrom
 pkg.go
 parser.go
 util.go
 consts.go
-cmd/cli/debsearch.go # TODO search
+cmd/cli/debsearch.go
 
 debsearch_test.go
 

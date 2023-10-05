@@ -13,14 +13,13 @@ import (
 	"github.com/mark-summerfield/clip"
 	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/gong"
-	"github.com/mark-summerfield/gset"
 )
 
 func main() {
 	log.SetFlags(0)
 	config := getConfig()
 	var pairs []ds.FilePair
-	if config.words.IsEmpty() {
+	if config.query.Words.IsEmpty() {
 		pairs = ds.StdFilePairs()
 	} else {
 		pairs = ds.StdFilePairsWithDescriptions()
@@ -44,10 +43,25 @@ func main() {
 			fmt.Println(tag)
 		}
 	}
-	// TODO search
-	if config.verbose {
-		elapsed := time.Since(t)
-		fmt.Printf("searched %s pkgs in %s\n",
+	elapsed := time.Since(t)
+	if config.IsSearch() {
+		query := ds.NewQuery()
+		if matches := query.SelectFrom(&pkgs); len(matches) == 0 {
+			fmt.Printf(
+				"searched %s pkgs in %s; no matching packages found.\n",
+				gong.Commas(len(pkgs.Pkgs)), elapsed)
+		} else {
+			if config.verbose {
+				fmt.Printf("found %s/%s pkgs in %s\n",
+					gong.Commas(len(matches)), gong.Commas(len(pkgs.Pkgs)),
+					elapsed)
+			}
+			for _, match := range matches {
+				fmt.Println(match)
+			}
+		}
+	} else if config.verbose {
+		fmt.Printf("searched %s pkgs in %s.\n",
 			gong.Commas(len(pkgs.Pkgs)), elapsed)
 	}
 }
@@ -71,9 +85,9 @@ func getConfig() *Config {
 		"[no default].", "")
 	tagsOpt := parser.Str("tags", "Constrain to the comma-separated list "+
 		"of tags (these are and-ed) [no default].", "")
-	listTagsOpt := parser.Flag("listtags", "Print tag names.")
+	listTagsOpt := parser.Flag("list-tags", "Print tag names.")
 	listTagsOpt.SetShortName(clip.NoShortName)
-	listSectionsOpt := parser.Flag("listsections", "Print section names.")
+	listSectionsOpt := parser.Flag("list-sections", "Print section names.")
 	listSectionsOpt.SetShortName(clip.NoShortName)
 	verboseOpt := parser.Flag("verbose",
 		"Print number of packages and time taken.")
@@ -85,18 +99,20 @@ func getConfig() *Config {
 		parser.OnError(err) // doesn't return
 		return nil          // never reached
 	}
-	config := Config{ui: uiOpt.Value(), sections: gset.New[string](),
-		tags: gset.New[string](), words: gset.New[string](),
-		listTags:     listTagsOpt.Value(),
+	config := Config{query: ds.NewQuery(), listTags: listTagsOpt.Value(),
 		listSections: listSectionsOpt.Value(), verbose: verboseOpt.Value()}
+	if uiOpt.Given() {
+		config.query.Ui = uiOpt.Value()
+	}
 	if sectionsOpt.Given() {
-		config.sections.Add(strings.Split(sectionsOpt.Value(), ",")...)
+		config.query.Sections.Add(
+			strings.Split(sectionsOpt.Value(), ",")...)
 	}
 	if tagsOpt.Given() {
-		config.tags.Add(strings.Split(tagsOpt.Value(), ",")...)
+		config.query.Tags.Add(strings.Split(tagsOpt.Value(), ",")...)
 	}
 	if len(parser.Positionals) > 0 {
-		config.words.Add(parser.Positionals...)
+		config.query.Words.Add(parser.Positionals...)
 	}
 	if !config.IsValid() {
 		parser.OnError(errors.New(
@@ -106,24 +122,27 @@ func getConfig() *Config {
 }
 
 type Config struct {
-	ui           string
-	sections     gset.Set[string]
-	tags         gset.Set[string]
-	words        gset.Set[string]
+	query        *ds.Query
 	listTags     bool
 	listSections bool
 	verbose      bool
 }
 
 func (me *Config) IsValid() bool {
-	return me.listTags || me.listSections || me.ui != "" ||
-		!me.sections.IsEmpty() || !me.tags.IsEmpty() || !me.words.IsEmpty()
+	return me.listTags || me.listSections || me.query.Ui != "" ||
+		!me.query.Sections.IsEmpty() || !me.query.Tags.IsEmpty() ||
+		!me.query.Words.IsEmpty()
+}
+
+func (me *Config) IsSearch() bool {
+	return me.query.Ui != "" || !me.query.Sections.IsEmpty() ||
+		!me.query.Tags.IsEmpty() || !me.query.Words.IsEmpty()
 }
 
 func (me *Config) String() string {
-	sections := strings.Join(me.sections.ToSortedSlice(), ",")
-	tags := strings.Join(me.tags.ToSortedSlice(), ",")
-	words := strings.Join(me.words.ToSortedSlice(), " ")
-	return fmt.Sprintf("ui=%q sections=%q tags=%q words=%q", me.ui,
+	sections := strings.Join(me.query.Sections.ToSortedSlice(), ",")
+	tags := strings.Join(me.query.Tags.ToSortedSlice(), ",")
+	words := strings.Join(me.query.Words.ToSortedSlice(), " ")
+	return fmt.Sprintf("ui=%q sections=%q tags=%q words=%q", me.query.Ui,
 		sections, tags, words)
 }

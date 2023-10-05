@@ -3,7 +3,9 @@
 
 package debsearch
 
-import "errors"
+import (
+	"errors"
+)
 
 const (
 	listsPath        = "/var/lib/apt/lists/"

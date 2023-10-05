@@ -3,7 +3,7 @@ module github.com/mark-summerfield/debsearch
 go 1.21.1
 
 require (
-	github.com/mark-summerfield/clip v1.2.0
+	github.com/mark-summerfield/clip v1.3.0
 	github.com/mark-summerfield/gong v1.5.0
 	github.com/mark-summerfield/gset v1.0.0
 )

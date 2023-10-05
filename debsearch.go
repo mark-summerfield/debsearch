@@ -5,6 +5,7 @@ package debsearch
 
 import (
 	_ "embed"
+	"fmt"
 
 	"github.com/mark-summerfield/gset"
 )
@@ -39,3 +40,34 @@ func NewFilePair(pkg, i18n string) FilePair {
 func StdFilePairs() []FilePair { return stdFilePairs(false) }
 
 func StdFilePairsWithDescriptions() []FilePair { return stdFilePairs(true) }
+
+type Query struct {
+	Ui          string // if empty any UI matches; else cli or tui or gui
+	Sections    gset.Set[string]
+	SectionsAnd bool // if true all sections must match; else any
+	Tags        gset.Set[string]
+	TagsAnd     bool // if true all tags must match; else any
+	Words       gset.Set[string]
+	WordsAnd    bool // if true all tags must match; else any
+}
+
+func NewQuery() *Query {
+	return &Query{Sections: gset.New[string](), Tags: gset.New[string](),
+		Words: gset.New[string]()}
+}
+
+func (me *Query) SelectFrom(pkgs *pkgs) []*pkg {
+	matched := []*pkg{}
+	fmt.Println("SelectFrom", len(pkgs.Pkgs), me) // TODO
+	return matched
+}
+
+func (me *Query) Clear() {
+	me.Ui = ""
+	me.Sections.Clear()
+	me.SectionsAnd = false
+	me.Tags.Clear()
+	me.TagsAnd = false
+	me.Words.Clear()
+	me.WordsAnd = false
+}
