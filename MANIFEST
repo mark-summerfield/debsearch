@@ -9,13 +9,17 @@ parser.go
 util.go
 consts.go
 cmd/cli/debsearch.go
-cmd/gui/DebSearcher.go
+
+# Filter out non-free sections & add [ ] Include Non-Free checkbox.
+# If user checks the checkbox, go through their chosen sections and for
+# each one, s, add non-free/s
+cmd/gui/DebFind.go
 
 README.md
 
 st.sh
 
-build.sh # TODO DebSearcher
-deploy.sh # TODO DebSearcher
+build.sh # TODO DebFind
+deploy.sh # TODO DebFind
 
 # vim: syn=yaml

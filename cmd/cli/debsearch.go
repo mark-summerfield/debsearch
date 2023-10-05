@@ -68,7 +68,7 @@ func search(config *Config, pkgs ds.Pkgs, elapsed time.Duration) {
 			gong.Commas(len(pkgs.Pkgs)), elapsed)
 	} else {
 		for _, pkg := range matches {
-			fmt.Printf("• %s\n", pkg)
+			fmt.Printf("* %s\n", pkg)
 		}
 		if config.verbose {
 			fmt.Printf("found %s/%s pkgs in %s\n",
