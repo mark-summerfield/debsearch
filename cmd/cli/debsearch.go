@@ -4,6 +4,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -28,15 +29,19 @@ func main() {
 	pkgs, err := ds.NewPkgs(pairs...)
 	gong.CheckError("failed to read package files", err)
 	if config.listSections {
-		fmt.Printf("sections (%d):\n", len(pkgs.Sections))
+		if config.verbose {
+			fmt.Printf("Sections (%d):\n", len(pkgs.Sections))
+		}
 		for _, section := range pkgs.Sections.ToSortedSlice() {
-			fmt.Printf("\t%s\n", section)
+			fmt.Println(section)
 		}
 	}
 	if config.listTags {
-		fmt.Printf("tags (%d):\n", len(pkgs.Tags))
+		if config.verbose {
+			fmt.Printf("Tags (%d):\n", len(pkgs.Tags))
+		}
 		for _, tag := range pkgs.Tags.ToSortedSlice() {
-			fmt.Printf("\t%s\n", tag)
+			fmt.Println(tag)
 		}
 	}
 	// TODO search
@@ -50,13 +55,8 @@ func main() {
 func getConfig() *Config {
 	parser := clip.NewParserVersion(ds.Version)
 	parser.LongDesc = "A tool for searching debian packages."
-	listTagsOpt := parser.Flag("listtags", "Print the tag names.")
-	listTagsOpt.SetShortName(clip.NoShortName)
-	listSectionsOpt := parser.Flag("listsections",
-		"Print the section names.")
-	listSectionsOpt.SetShortName(clip.NoShortName)
 	uiOpt := parser.Str("ui", "Constrain to the given UI "+
-		"(cli, tui, or gui) [default: any].", "")
+		"(cli, tui, or gui) [default: any UI].", "")
 	uiOpt.Validator = func(name, value string) (string, string) {
 		value = strings.ToLower(value)
 		for _, valid := range []string{"cli", "tui", "gui"} {
@@ -66,15 +66,20 @@ func getConfig() *Config {
 		}
 		return "", fmt.Sprintf("invalid format: %q", value)
 	}
-	sectionsOpt := parser.Str("sections", "A comma-separated list "+
-		"of sections (these are or-ed) [no default].", "")
-	tagsOpt := parser.Str("tags", "A comma-separated list "+
+	sectionsOpt := parser.Str("sections", "Contrain to the "+
+		"comma-separated list of sections (these are or-ed) "+
+		"[no default].", "")
+	tagsOpt := parser.Str("tags", "Constrain to the comma-separated list "+
 		"of tags (these are and-ed) [no default].", "")
+	listTagsOpt := parser.Flag("listtags", "Print tag names.")
+	listTagsOpt.SetShortName(clip.NoShortName)
+	listSectionsOpt := parser.Flag("listsections", "Print section names.")
+	listSectionsOpt.SetShortName(clip.NoShortName)
 	verboseOpt := parser.Flag("verbose",
 		"Print number of packages and time taken.")
 	parser.PositionalCount = clip.ZeroOrMorePositionals
-	parser.PositionalHelp = "Words to search for (these are and-ed) " +
-		"[no default]."
+	parser.PositionalHelp = "Constrain to the given words in " +
+		"descriptions (these are and-ed) [no default]."
 	parser.MustSetPositionalVarName("WORD")
 	if err := parser.Parse(); err != nil {
 		parser.OnError(err) // doesn't return
@@ -93,6 +98,10 @@ func getConfig() *Config {
 	if len(parser.Positionals) > 0 {
 		config.words.Add(parser.Positionals...)
 	}
+	if !config.IsValid() {
+		parser.OnError(errors.New(
+			"error: at least one option or word is required"))
+	}
 	return &config
 }
 
@@ -104,6 +113,11 @@ type Config struct {
 	listTags     bool
 	listSections bool
 	verbose      bool
+}
+
+func (me *Config) IsValid() bool {
+	return me.listTags || me.listSections || me.ui != "" ||
+		!me.sections.IsEmpty() || !me.tags.IsEmpty() || !me.words.IsEmpty()
 }
 
 func (me *Config) String() string {

@@ -126,6 +126,7 @@ func addTags(pkg *pkg, line string, pkgs *pkgs) {
 	for _, item := range strings.Split(line, ",") {
 		item = strings.TrimSpace(item)
 		if item != "" {
+			item = strings.ReplaceAll(item, "::", "/")
 			pkg.Tags.Add(item)
 			pkgs.Tags.Add(item)
 		}
