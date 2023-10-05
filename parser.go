@@ -96,7 +96,6 @@ func readPackages(filename string) (pkgs, error) {
 		return pkgs, fmt.Errorf("%w: %s", Err101, err)
 	}
 	defer file.Close()
-	var name string
 	pkg := NewPkg()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -105,19 +104,19 @@ func readPackages(filename string) (pkgs, error) {
 			continue
 		}
 		if strings.HasPrefix(line, packagePrefix) {
-			if name != "" && pkg.IsValid() {
-				pkgs.Pkgs[name] = pkg.Copy()
+			if pkg.Name != "" && pkg.IsValid() {
+				pkgs.Pkgs[pkg.Name] = pkg.Copy()
 				pkg.Clear()
 			}
-			name = strings.TrimSpace(line[packagePrefixLen:])
+			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
 		} else if strings.HasPrefix(line, " ") {
 			addTags(pkg, line, &pkgs)
 		} else {
 			maybeAddKeyValue(pkg, line, &pkgs)
 		}
 	}
-	if name != "" && pkg.IsValid() {
-		pkgs.Pkgs[name] = pkg.Copy()
+	if pkg.IsValid() {
+		pkgs.Pkgs[pkg.Name] = pkg.Copy()
 	}
 	return pkgs, nil
 }

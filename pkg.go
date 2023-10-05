@@ -5,7 +5,9 @@ package debsearch
 
 import (
 	_ "embed"
+	"fmt"
 
+	"github.com/mark-summerfield/gong"
 	"github.com/mark-summerfield/gset"
 )
 
@@ -47,5 +49,7 @@ func (me *pkg) IsValid() bool {
 		me.Section != "" && me.ShortDesc != ""
 }
 
-//func (me *pkg) String() string {
-//}
+func (me *pkg) String() string {
+	return fmt.Sprintf("%s v%s %s %s %s", me.Name, me.Version,
+		gong.Commas(me.Size), me.Url, me.ShortDesc)
+}

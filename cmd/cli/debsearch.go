@@ -45,8 +45,7 @@ func main() {
 	}
 	elapsed := time.Since(t)
 	if config.IsSearch() {
-		query := ds.NewQuery()
-		if matches := query.SelectFrom(&pkgs); len(matches) == 0 {
+		if matches := config.query.SelectFrom(&pkgs); len(matches) == 0 {
 			fmt.Printf(
 				"searched %s pkgs in %s; no matching packages found.\n",
 				gong.Commas(len(pkgs.Pkgs)), elapsed)
@@ -68,9 +67,9 @@ func main() {
 
 func getConfig() *Config {
 	parser := clip.NewParserVersion(ds.Version)
-	parser.LongDesc = "A tool for searching debian packages."
-	uiOpt := parser.Str("ui", "Constrain to the given UI "+
-		"(cli, tui, or gui) [default: any UI].", "")
+	parser.LongDesc = "A tool for searching Debian packages."
+	uiOpt := parser.Str("ui", "Match the given UI (cli, tui, or gui) "+
+		"[default: match any UI].", "")
 	uiOpt.Validator = func(name, value string) (string, string) {
 		value = strings.ToLower(value)
 		for _, valid := range []string{"cli", "tui", "gui"} {
@@ -80,11 +79,17 @@ func getConfig() *Config {
 		}
 		return "", fmt.Sprintf("invalid format: %q", value)
 	}
-	sectionsOpt := parser.Str("sections", "Contrain to the "+
-		"comma-separated list of sections (these are or-ed) "+
-		"[no default].", "")
-	tagsOpt := parser.Str("tags", "Constrain to the comma-separated list "+
-		"of tags (these are and-ed) [no default].", "")
+	sectionsOpt := parser.Str("sections", "Match any of the "+
+		"comma-separated list of sections [default: match any section].",
+		"")
+	tagsOpt := parser.Str("tags", "Match the comma-separated list "+
+		"of tags [default: match any tags].", "")
+	allTagsOpt := parser.Flag("all-tags", "Match all the "+
+		"given tags [default: match any given tag].")
+	allTagsOpt.SetShortName(clip.NoShortName)
+	allWordsOpt := parser.Flag("all-words", "Match all the "+
+		"given words [default: match any given word].")
+	allWordsOpt.SetShortName(clip.NoShortName)
 	listTagsOpt := parser.Flag("list-tags", "Print tag names.")
 	listTagsOpt.SetShortName(clip.NoShortName)
 	listSectionsOpt := parser.Flag("list-sections", "Print section names.")
@@ -92,8 +97,8 @@ func getConfig() *Config {
 	verboseOpt := parser.Flag("verbose",
 		"Print number of packages and time taken.")
 	parser.PositionalCount = clip.ZeroOrMorePositionals
-	parser.PositionalHelp = "Constrain to the given words in " +
-		"descriptions (these are and-ed) [no default]."
+	parser.PositionalHelp = "Match the given words in descriptions " +
+		"[no default]."
 	parser.MustSetPositionalVarName("WORD")
 	if err := parser.Parse(); err != nil {
 		parser.OnError(err) // doesn't return
@@ -111,6 +116,8 @@ func getConfig() *Config {
 	if tagsOpt.Given() {
 		config.query.Tags.Add(strings.Split(tagsOpt.Value(), ",")...)
 	}
+	config.query.TagsAnd = allTagsOpt.Value()
+	config.query.WordsAnd = allWordsOpt.Value()
 	if len(parser.Positionals) > 0 {
 		config.query.Words.Add(parser.Positionals...)
 	}
@@ -140,9 +147,6 @@ func (me *Config) IsSearch() bool {
 }
 
 func (me *Config) String() string {
-	sections := strings.Join(me.query.Sections.ToSortedSlice(), ",")
-	tags := strings.Join(me.query.Tags.ToSortedSlice(), ",")
-	words := strings.Join(me.query.Words.ToSortedSlice(), " ")
-	return fmt.Sprintf("ui=%q sections=%q tags=%q words=%q", me.query.Ui,
-		sections, tags, words)
+	return fmt.Sprintf("query=%s listTags=%t listSections=%t verbose=%t",
+		me.query, me.listTags, me.listSections, me.verbose)
 }

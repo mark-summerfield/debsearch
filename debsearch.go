@@ -6,6 +6,7 @@ package debsearch
 import (
 	_ "embed"
 	"fmt"
+	"strings"
 
 	"github.com/mark-summerfield/gset"
 )
@@ -42,13 +43,12 @@ func StdFilePairs() []FilePair { return stdFilePairs(false) }
 func StdFilePairsWithDescriptions() []FilePair { return stdFilePairs(true) }
 
 type Query struct {
-	Ui          string // if empty any UI matches; else cli or tui or gui
-	Sections    gset.Set[string]
-	SectionsAnd bool // if true all sections must match; else any
-	Tags        gset.Set[string]
-	TagsAnd     bool // if true all tags must match; else any
-	Words       gset.Set[string]
-	WordsAnd    bool // if true all tags must match; else any
+	Ui       string           // any UI if empty; else cli or tui or gui
+	Sections gset.Set[string] // sections are always or-ed
+	Tags     gset.Set[string]
+	TagsAnd  bool // if true all tags must match; else any
+	Words    gset.Set[string]
+	WordsAnd bool // if true all tags must match; else any
 }
 
 func NewQuery() *Query {
@@ -56,8 +56,8 @@ func NewQuery() *Query {
 		Words: gset.New[string]()}
 }
 
-func (me *Query) SelectFrom(pkgs *pkgs) []*pkg {
-	matched := []*pkg{}
+func (me *Query) SelectFrom(pkgs *pkgs) gset.Set[*pkg] {
+	matched := gset.New[*pkg]()
 	fmt.Println("SelectFrom", len(pkgs.Pkgs), me) // TODO
 	return matched
 }
@@ -65,9 +65,24 @@ func (me *Query) SelectFrom(pkgs *pkgs) []*pkg {
 func (me *Query) Clear() {
 	me.Ui = ""
 	me.Sections.Clear()
-	me.SectionsAnd = false
 	me.Tags.Clear()
 	me.TagsAnd = false
 	me.Words.Clear()
 	me.WordsAnd = false
+}
+
+func (me *Query) String() string {
+	sections := strings.Join(me.Sections.ToSortedSlice(), ",")
+	tags := strings.Join(me.Tags.ToSortedSlice(), ",")
+	tagOp := "|"
+	if me.TagsAnd {
+		tagOp = "&"
+	}
+	words := strings.Join(me.Words.ToSortedSlice(), " ")
+	wordOp := "|"
+	if me.WordsAnd {
+		wordOp = "&"
+	}
+	return fmt.Sprintf("ui=%q sections|%q tags%s%q words%s%q", me.Ui,
+		sections, tagOp, tags, wordOp, words)
 }
