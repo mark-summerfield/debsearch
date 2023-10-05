@@ -6,6 +6,7 @@ package debsearch
 import (
 	_ "embed"
 	"fmt"
+	"strings"
 
 	"github.com/mark-summerfield/gong"
 	"github.com/mark-summerfield/gset"
@@ -49,7 +50,18 @@ func (me *pkg) IsValid() bool {
 		me.Section != "" && me.ShortDesc != ""
 }
 
+func (me *pkg) Words() gset.Set[string] {
+	words := gset.New[string]()
+	for _, word := range strings.Fields(me.ShortDesc) {
+		words.Add(strings.ToLower(word))
+	}
+	for _, word := range strings.Fields(me.LongDesc) {
+		words.Add(strings.ToLower(word))
+	}
+	return words
+}
+
 func (me *pkg) String() string {
-	return fmt.Sprintf("%s v%s %s %s %s", me.Name, me.Version,
-		gong.Commas(me.Size), me.Url, me.ShortDesc)
+	return fmt.Sprintf("%s v%s %sKiB %q %s", me.Name, me.Version,
+		gong.Commas(me.Size/1024), me.ShortDesc, me.Url)
 }

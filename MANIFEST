@@ -1,9 +1,8 @@
 # UIs:
-#   - cli
 #   - tui with bubbletea?
 #   - gui with fltk?
 
-debsearch.go # TODO SelectFrom
+debsearch.go
 pkgs.go
 pkg.go
 filepair.go

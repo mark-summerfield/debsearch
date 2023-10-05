@@ -26,21 +26,37 @@ func NewQuery() *Query {
 func (me *Query) SelectFrom(pkgs *pkgs) gset.Set[*pkg] {
 	matched := gset.New[*pkg]()
 	for _, pkg := range pkgs.Pkgs {
-		if me.match(pkg) {
+		if me.Match(pkg) {
 			matched.Add(pkg)
 		}
 	}
 	return matched
 }
 
-func (me *Query) match(pkg *pkg) bool {
-	if !me.Sections.IsEmpty() {
+func (me *Query) Match(pkg *pkg) bool {
+	if !me.Sections.IsEmpty() && !me.Sections.Contains(pkg.Section) {
+		return false // no specified section matches
 	}
 	if !me.Tags.IsEmpty() {
+		intersection := me.Tags.Intersection(pkg.Tags)
+		if intersection.IsEmpty() {
+			return false // no tags match
+		}
+		if me.TagsAnd && !intersection.Equal(pkg.Tags) {
+			return false // not all tags match
+		}
 	}
 	if !me.Words.IsEmpty() {
+		words := pkg.Words()
+		intersection := me.Words.Intersection(words)
+		if intersection.IsEmpty() {
+			return false // no words match
+		}
+		if me.WordsAnd && !intersection.Equal(words) {
+			return false // not all words match
+		}
 	}
-	return false // TODO
+	return true
 }
 
 func (me *Query) Clear() {

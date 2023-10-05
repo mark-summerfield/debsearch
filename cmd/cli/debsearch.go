@@ -45,18 +45,19 @@ func main() {
 	}
 	elapsed := time.Since(t)
 	if config.IsSearch() {
-		if matches := config.query.SelectFrom(&pkgs); len(matches) == 0 {
+		matches := config.query.SelectFrom(&pkgs)
+		if len(matches) == 0 {
 			fmt.Printf(
 				"searched %s pkgs in %s; no matching packages found.\n",
 				gong.Commas(len(pkgs.Pkgs)), elapsed)
 		} else {
+			for pkg := range matches {
+				fmt.Printf("• %s\n", pkg)
+			}
 			if config.verbose {
 				fmt.Printf("found %s/%s pkgs in %s\n",
 					gong.Commas(len(matches)), gong.Commas(len(pkgs.Pkgs)),
 					elapsed)
-			}
-			for _, match := range matches {
-				fmt.Println(match)
 			}
 		}
 	} else if config.verbose {
@@ -86,8 +87,8 @@ func getConfig() *Config {
 	verboseOpt := parser.Flag("verbose",
 		"Print number of packages and time taken.")
 	parser.PositionalCount = clip.ZeroOrMorePositionals
-	parser.PositionalHelp = "Match the given words in descriptions " +
-		"[no default]."
+	parser.PositionalHelp = "Match the given (case-folded) words in " +
+		"descriptions [no default]."
 	parser.MustSetPositionalVarName("WORD")
 	if err := parser.Parse(); err != nil {
 		parser.OnError(err) // doesn't return
@@ -105,7 +106,9 @@ func getConfig() *Config {
 	config.query.TagsAnd = allTagsOpt.Value()
 	config.query.WordsAnd = allWordsOpt.Value()
 	if len(parser.Positionals) > 0 {
-		config.query.Words.Add(parser.Positionals...)
+		for _, word := range parser.Positionals {
+			config.query.Words.Add(strings.ToLower(word))
+		}
 	}
 	if !config.IsValid() {
 		parser.OnError(errors.New(
