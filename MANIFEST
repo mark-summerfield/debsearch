@@ -4,7 +4,10 @@
 #   - gui with fltk?
 
 debsearch.go # TODO SelectFrom
+pkgs.go
 pkg.go
+filepair.go
+query.go
 parser.go
 util.go
 consts.go

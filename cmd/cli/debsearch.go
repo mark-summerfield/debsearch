@@ -68,17 +68,6 @@ func main() {
 func getConfig() *Config {
 	parser := clip.NewParserVersion(ds.Version)
 	parser.LongDesc = "A tool for searching Debian packages."
-	uiOpt := parser.Str("ui", "Match the given UI (cli, tui, or gui) "+
-		"[default: match any UI].", "")
-	uiOpt.Validator = func(name, value string) (string, string) {
-		value = strings.ToLower(value)
-		for _, valid := range []string{"cli", "tui", "gui"} {
-			if value == valid {
-				return value, ""
-			}
-		}
-		return "", fmt.Sprintf("invalid format: %q", value)
-	}
 	sectionsOpt := parser.Str("sections", "Match any of the "+
 		"comma-separated list of sections [default: match any section].",
 		"")
@@ -106,9 +95,6 @@ func getConfig() *Config {
 	}
 	config := Config{query: ds.NewQuery(), listTags: listTagsOpt.Value(),
 		listSections: listSectionsOpt.Value(), verbose: verboseOpt.Value()}
-	if uiOpt.Given() {
-		config.query.Ui = uiOpt.Value()
-	}
 	if sectionsOpt.Given() {
 		config.query.Sections.Add(
 			strings.Split(sectionsOpt.Value(), ",")...)
@@ -136,14 +122,13 @@ type Config struct {
 }
 
 func (me *Config) IsValid() bool {
-	return me.listTags || me.listSections || me.query.Ui != "" ||
-		!me.query.Sections.IsEmpty() || !me.query.Tags.IsEmpty() ||
-		!me.query.Words.IsEmpty()
+	return me.listTags || me.listSections || !me.query.Sections.IsEmpty() ||
+		!me.query.Tags.IsEmpty() || !me.query.Words.IsEmpty()
 }
 
 func (me *Config) IsSearch() bool {
-	return me.query.Ui != "" || !me.query.Sections.IsEmpty() ||
-		!me.query.Tags.IsEmpty() || !me.query.Words.IsEmpty()
+	return !me.query.Sections.IsEmpty() || !me.query.Tags.IsEmpty() ||
+		!me.query.Words.IsEmpty()
 }
 
 func (me *Config) String() string {
