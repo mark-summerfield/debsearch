@@ -4,7 +4,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -111,8 +110,7 @@ func getConfig() *Config {
 		}
 	}
 	if !config.IsValid() {
-		parser.OnError(errors.New(
-			"error: at least one option or word is required"))
+		parser.OnHelp() // doesn't return
 	}
 	return &config
 }

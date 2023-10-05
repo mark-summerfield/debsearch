@@ -1,6 +1,5 @@
-# UIs:
-#   - tui with bubbletea?
-#   - gui with fltk?
+# - gui with fltk?
+# - tui with bubbletea?
 
 debsearch.go
 pkgs.go
