@@ -12,6 +12,7 @@ import (
 	"github.com/mark-summerfield/clip"
 	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/gong"
+	"github.com/mark-summerfield/gset"
 )
 
 func main() {
@@ -26,42 +27,54 @@ func main() {
 	t := time.Now()
 	pkgs, err := ds.NewPkgs(pairs...)
 	gong.CheckError("failed to read package files", err)
+	maybePrintSections(config, pkgs.Sections)
+	maybePrintTags(config, pkgs.Tags)
+	elapsed := time.Since(t)
+	if config.IsSearch() {
+		search(config, pkgs, elapsed)
+	} else if config.verbose {
+		fmt.Printf("searched %s pkgs in %s.\n", gong.Commas(len(pkgs.Pkgs)),
+			elapsed)
+	}
+}
+
+func maybePrintSections(config *Config, sections gset.Set[string]) {
 	if config.listSections {
 		if config.verbose {
-			fmt.Printf("Sections (%d):\n", len(pkgs.Sections))
+			fmt.Printf("Sections (%d):\n", len(sections))
 		}
-		for _, section := range pkgs.Sections.ToSortedSlice() {
+		for _, section := range sections.ToSortedSlice() {
 			fmt.Println(section)
 		}
 	}
+}
+
+func maybePrintTags(config *Config, tags gset.Set[string]) {
 	if config.listTags {
 		if config.verbose {
-			fmt.Printf("Tags (%d):\n", len(pkgs.Tags))
+			fmt.Printf("Tags (%d):\n", len(tags))
 		}
-		for _, tag := range pkgs.Tags.ToSortedSlice() {
+		for _, tag := range tags.ToSortedSlice() {
 			fmt.Println(tag)
 		}
 	}
-	elapsed := time.Since(t)
-	if config.IsSearch() {
-		matches := config.query.SelectFrom(&pkgs)
-		if len(matches) == 0 {
-			fmt.Printf(
-				"searched %s pkgs in %s; no matching packages found.\n",
-				gong.Commas(len(pkgs.Pkgs)), elapsed)
-		} else {
-			for pkg := range matches {
-				fmt.Printf("• %s\n", pkg)
-			}
-			if config.verbose {
-				fmt.Printf("found %s/%s pkgs in %s\n",
-					gong.Commas(len(matches)), gong.Commas(len(pkgs.Pkgs)),
-					elapsed)
-			}
-		}
-	} else if config.verbose {
-		fmt.Printf("searched %s pkgs in %s.\n",
+}
+
+func search(config *Config, pkgs ds.Pkgs, elapsed time.Duration) {
+	matches := config.query.SelectFrom(&pkgs)
+	if len(matches) == 0 {
+		fmt.Printf(
+			"searched %s pkgs in %s; no matching packages found.\n",
 			gong.Commas(len(pkgs.Pkgs)), elapsed)
+	} else {
+		for _, pkg := range matches {
+			fmt.Printf("• %s\n", pkg)
+		}
+		if config.verbose {
+			fmt.Printf("found %s/%s pkgs in %s\n",
+				gong.Commas(len(matches)), gong.Commas(len(pkgs.Pkgs)),
+				elapsed)
+		}
 	}
 }
 
@@ -84,7 +97,7 @@ func getConfig() *Config {
 	listSectionsOpt := parser.Flag("list-sections", "Print section names.")
 	listSectionsOpt.SetShortName(clip.NoShortName)
 	verboseOpt := parser.Flag("verbose",
-		"Print number of packages and time taken.")
+		"Print number of packages and how long to read them.")
 	parser.PositionalCount = clip.ZeroOrMorePositionals
 	parser.PositionalHelp = "Match the given (case-folded) words in " +
 		"descriptions [no default]."

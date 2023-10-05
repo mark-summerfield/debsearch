@@ -4,7 +4,9 @@
 package debsearch
 
 import (
+	"cmp"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/mark-summerfield/gset"
@@ -23,14 +25,18 @@ func NewQuery() *Query {
 		Words: gset.New[string]()}
 }
 
-func (me *Query) SelectFrom(pkgs *pkgs) gset.Set[*pkg] {
+func (me *Query) SelectFrom(pkgs *Pkgs) []*pkg {
 	matched := gset.New[*pkg]()
 	for _, pkg := range pkgs.Pkgs {
 		if me.Match(pkg) {
 			matched.Add(pkg)
 		}
 	}
-	return matched
+	slice := matched.ToSlice()
+	slices.SortFunc(slice, func(a, b *pkg) int {
+		return cmp.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
+	})
+	return slice
 }
 
 func (me *Query) Match(pkg *pkg) bool {

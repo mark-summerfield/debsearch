@@ -5,7 +5,6 @@ package debsearch
 
 import (
 	"bufio"
-	_ "embed"
 	"errors"
 	"fmt"
 	"os"
@@ -16,7 +15,7 @@ import (
 )
 
 type parser struct {
-	pkgs             pkgs
+	pkgs             Pkgs
 	pkgsMutex        sync.Mutex
 	err              error
 	errMutex         sync.Mutex
@@ -24,15 +23,15 @@ type parser struct {
 	descForPkgsMutex sync.Mutex
 }
 
-func parse(filepairs ...FilePair) (pkgs, error) {
+func parse(filepairs ...FilePair) (Pkgs, error) {
 	if len(filepairs) == 0 {
-		return pkgs{}, Err103
+		return Pkgs{}, Err103
 	}
 	parser := &parser{pkgs: newPkgs(), descForPkgs: map[string]string{}}
 	return parser.parse(filepairs...)
 }
 
-func (me *parser) parse(filepairs ...FilePair) (pkgs, error) {
+func (me *parser) parse(filepairs ...FilePair) (Pkgs, error) {
 	var wg sync.WaitGroup
 	for i, pair := range filepairs {
 		wg.Add(1)
@@ -49,9 +48,9 @@ func (me *parser) parse(filepairs ...FilePair) (pkgs, error) {
 		}
 	}
 	wg.Wait()
-	for name, long_desc := range me.descForPkgs { // merge
+	for name, longDesc := range me.descForPkgs { // merge
 		if pkg, ok := me.pkgs.Pkgs[name]; ok {
-			pkg.LongDesc = long_desc
+			pkg.LongDesc = longDesc
 		}
 	}
 	return me.pkgs, me.err
@@ -61,16 +60,16 @@ func (me *parser) readPackages(filename string) {
 	pkgs, err := readPackages(filename)
 	if err != nil {
 		me.errMutex.Lock()
+		defer me.errMutex.Unlock()
 		me.err = errors.Join(err)
-		me.errMutex.Unlock()
 	} else {
 		me.pkgsMutex.Lock()
+		defer me.pkgsMutex.Unlock()
 		for name, pkg := range pkgs.Pkgs {
 			me.pkgs.Pkgs[name] = pkg
 		}
 		me.pkgs.Sections.Unite(pkgs.Sections)
 		me.pkgs.Tags.Unite(pkgs.Tags)
-		me.pkgsMutex.Unlock()
 	}
 }
 
@@ -78,18 +77,18 @@ func (me *parser) readDescriptions(filename string) {
 	descForPkgs, err := readDescriptions(filename)
 	if err != nil {
 		me.errMutex.Lock()
+		defer me.errMutex.Unlock()
 		me.err = errors.Join(err)
-		me.errMutex.Unlock()
 	} else {
 		me.descForPkgsMutex.Lock()
+		defer me.descForPkgsMutex.Unlock()
 		for name, desc := range descForPkgs {
 			me.descForPkgs[name] = desc
 		}
-		me.descForPkgsMutex.Unlock()
 	}
 }
 
-func readPackages(filename string) (pkgs, error) {
+func readPackages(filename string) (Pkgs, error) {
 	pkgs := newPkgs()
 	file, err := os.Open(filename)
 	if err != nil {
@@ -121,7 +120,7 @@ func readPackages(filename string) (pkgs, error) {
 	return pkgs, nil
 }
 
-func addTags(pkg *pkg, line string, pkgs *pkgs) {
+func addTags(pkg *pkg, line string, pkgs *Pkgs) {
 	for _, item := range strings.Split(line, ",") {
 		item = strings.TrimSpace(item)
 		if item != "" {
@@ -132,7 +131,7 @@ func addTags(pkg *pkg, line string, pkgs *pkgs) {
 	}
 }
 
-func maybeAddKeyValue(pkg *pkg, line string, pkgs *pkgs) {
+func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
@@ -166,7 +165,7 @@ func readDescriptions(filename string) (map[string]string, error) {
 	defer file.Close()
 	descForPkg := map[string]string{}
 	name := ""
-	long_desc := ""
+	longDesc := ""
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -174,21 +173,21 @@ func readDescriptions(filename string) (map[string]string, error) {
 			continue
 		}
 		if strings.HasPrefix(line, packagePrefix) {
-			if name != "" && long_desc != "" {
-				descForPkg[name] = long_desc
+			if name != "" && longDesc != "" {
+				descForPkg[name] = longDesc
 			}
 			name = strings.TrimSpace(line[packagePrefixLen:])
-			long_desc = ""
+			longDesc = ""
 		} else if strings.HasPrefix(line, " ") {
 			line = strings.TrimSpace(line)
 			if line == "." {
 				line = "\n"
 			}
-			long_desc += line
+			longDesc += line
 		}
 	}
-	if name != "" && long_desc != "" {
-		descForPkg[name] = long_desc
+	if name != "" && longDesc != "" {
+		descForPkg[name] = longDesc
 	}
 	return descForPkg, nil
 }

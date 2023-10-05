@@ -4,7 +4,6 @@
 package debsearch
 
 import (
-	_ "embed"
 	"fmt"
 	"strings"
 

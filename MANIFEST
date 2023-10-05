@@ -1,7 +1,6 @@
 # - gui with fltk?
 # - tui with bubbletea?
 
-debsearch.go
 pkgs.go
 pkg.go
 filepair.go
