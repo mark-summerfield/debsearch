@@ -10,8 +10,6 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-debsearch_test.go
-
 README.md
 
 st.sh
