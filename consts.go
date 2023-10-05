@@ -4,8 +4,12 @@
 package debsearch
 
 import (
+	_ "embed"
 	"errors"
 )
+
+//go:embed Version.dat
+var Version string
 
 const (
 	listsPath        = "/var/lib/apt/lists/"

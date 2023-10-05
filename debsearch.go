@@ -2,10 +2,3 @@
 // License: GPL-3
 
 package debsearch
-
-import (
-	_ "embed"
-)
-
-//go:embed Version.dat
-var Version string

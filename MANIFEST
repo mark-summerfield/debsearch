@@ -10,12 +10,13 @@ parser.go
 util.go
 consts.go
 cmd/cli/debsearch.go
+cmd/gui/DebSearcher.go
 
 README.md
 
 st.sh
 
-# /var/lib/apt/lists/deb.debian.org_debian_dists_bullseye_main_binary-amd64_Packages
-# /var/lib/apt/lists/deb.debian.org_debian_dists_bullseye_main_i18n_Translation-en
+build.sh # TODO DebSearcher
+deploy.sh # TODO DebSearcher
 
 # vim: syn=yaml
