@@ -1,11 +1,13 @@
 // Copyright © 2023 Mark Summerfield. All rights reserved.
-// License: Apache-2.0
+// License: GPL-3
 
 package main
 
 import (
 	"fmt"
 
+	ds "github.com/mark-summerfield/debsearch"
+	"github.com/mark-summerfield/debsearch/cmd/gui/gui"
 	"github.com/pwiecz/go-fltk"
 )
 
@@ -20,7 +22,7 @@ func (me *App) onEvent(event fltk.Event) bool {
 		}
 	case fltk.KEY:
 		switch key {
-		case fltk.HELP:
+		case fltk.HELP, fltk.F1:
 			me.onHelp()
 			return true
 		}
@@ -60,11 +62,16 @@ func (me *App) onConfigure() {
 }
 
 func (me *App) onAbout() {
-	fmt.Println("onAbout")
+	descHtml := gui.DescHtml(appName, ds.Version, description, url, author,
+		gui.AboutYear(2023))
+	gui.ShowAbout(appName, descHtml, iconSvg, me.config.TextSize)
+
 }
 
 func (me *App) onHelp() {
-	fmt.Println("onHelp")
+	form := gui.MakeInfoForm("Help", appName, helpHtml, iconSvg, 500, 400,
+		me.config.TextSize, true)
+	form.Show()
 }
 
 func (me *App) onQuit() {

@@ -1,5 +1,5 @@
 // Copyright © 2023 Mark Summerfield. All rights reserved.
-// License: Apache-2.0
+// License: GPL-3
 
 package main
 
@@ -15,18 +15,20 @@ import (
 )
 
 type Config struct {
-	filename string
-	X        int
-	Y        int
-	Width    int
-	Height   int
-	Scale    float32
+	filename               string
+	X                      int
+	Y                      int
+	Width                  int
+	Height                 int
+	Scale                  float32
+	TextSize               int
+	IncludeNonFreeSections bool
 }
 
 func newConfig() *Config {
 	filename, found := gong.GetIniFile(domain, appName)
 	config := &Config{filename: filename, X: -1, Width: 800, Height: 600,
-		Scale: 1.0}
+		Scale: 1.0, TextSize: 14}
 	if found {
 		cfg, err := ini.Load(filename)
 		if err != nil {
@@ -45,6 +47,10 @@ func newConfig() *Config {
 				}
 				if config.Scale < 0.5 || config.Scale > 5 {
 					config.Scale = 1
+				}
+				if config.TextSize < 10 ||
+					config.TextSize > 20 {
+					config.TextSize = 14
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 // Copyright © 2023 Mark Summerfield. All rights reserved.
-// License: Apache-2.0
+// License: GPL-3
 
 package main
 
@@ -15,7 +15,7 @@ type configForm struct {
 }
 
 func newConfigForm(app *App) configForm {
-	form := configForm{width: 240, height: 220}
+	form := configForm{width: 240, height: 160}
 	form.Window = fltk.NewWindow(form.width, form.height)
 	form.Window.SetLabel("Configure — " + appName)
 	gui.AddWindowIcon(form.Window, iconSvg)
@@ -27,6 +27,8 @@ func newConfigForm(app *App) configForm {
 func (me *configForm) makeWidgets(app *App) {
 	vbox := gui.MakeVBox(0, 0, me.width, me.height, gui.Pad)
 	hbox := me.makeScaleRow()
+	vbox.Fixed(hbox, rowHeight)
+	hbox = me.makeTextSizeRow(app)
 	vbox.Fixed(hbox, rowHeight)
 	hbox = me.makeButtonRow()
 	vbox.Fixed(hbox, rowHeight)
@@ -56,6 +58,26 @@ func (me *configForm) makeScaleSpinner() *fltk.Spinner {
 		fltk.SetScreenScale(0, float32(spinner.Value()))
 	})
 	return spinner
+}
+
+func (me *configForm) makeTextSizeRow(app *App) *fltk.Flex {
+	buttonHeight := gui.ButtonHeight()
+	labelWidth := gui.LabelWidth()
+	hbox := gui.MakeHBox(0, 0, me.width, rowHeight, gui.Pad)
+	sizeLabel := gui.MakeAccelLabel(colWidth, buttonHeight, "&Text Size")
+	spinner := fltk.NewSpinner(0, 0, labelWidth, buttonHeight)
+	spinner.SetTooltip("Set the size of the about and help texts.")
+	spinner.SetType(fltk.SPINNER_INT_INPUT)
+	spinner.SetMinimum(10)
+	spinner.SetMaximum(20)
+	spinner.SetValue(float64(app.config.TextSize))
+	spinner.SetCallback(func() {
+		app.config.TextSize = int(spinner.Value())
+	})
+	sizeLabel.SetCallback(func() { spinner.TakeFocus() })
+	hbox.Fixed(sizeLabel, colWidth)
+	hbox.End()
+	return hbox
 }
 
 func (me *configForm) makeButtonRow() *fltk.Flex {

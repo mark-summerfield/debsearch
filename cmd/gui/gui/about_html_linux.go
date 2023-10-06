@@ -1,5 +1,5 @@
 // Copyright © 2023 Mark Summerfield. All rights reserved.
-// License: Apache-2.0
+// License: GPL-3
 
 //go:build !windows
 
@@ -36,7 +36,7 @@ func DescHtml(appName, version, desc, url, author, year string) string {
 <p><center>
 <font color=green>Copyright © %s %s.<br>
 All rights reserved.<br>
-License: Apache-2.0.
+License: GPL-3.
 </center></p>
 <p><center><font color=#222>%s %s/%s</font></center><br>
 <center><font color=#222>go-fltk %s FLTK

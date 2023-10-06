@@ -1,11 +1,10 @@
 // Copyright © 2023 Mark Summerfield. All rights reserved.
-// License: Apache-2.0
+// License: GPL-3
 
 package main
 
 import (
 	"fmt"
-	"time"
 
 	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/debsearch/cmd/gui/gui"
@@ -31,14 +30,14 @@ func newApp(config *Config, args []string) *App {
 }
 
 func (me *App) loadPackages() {
-	t := time.Now()
 	pairs := ds.StdFilePairsWithDescriptions()
 	if pkgs, err := ds.NewPkgs(pairs...); err != nil {
 		me.onError(err)
 	} else {
 		me.pkgs = &pkgs
-		me.onInfo(fmt.Sprintf("Read %s packages in %s.\n",
-			gong.Commas(len(pkgs.Pkgs)), time.Since(t)), false)
+		// TODO populate Sections & Tags widgets
+		me.onInfo(fmt.Sprintf("Read %s packages.\n",
+			gong.Commas(len(pkgs.Pkgs))), false)
 	}
 }
 
@@ -53,17 +52,19 @@ func (me *App) makeMainWindow() {
 	gui.AddWindowIcon(me.Window, iconSvg)
 }
 
-func (me *App) makeWidgets() {
+func (me *App) makeWidgets() { // TODO set non-free checkbox from config
 	width := me.Window.W()
 	height := me.Window.H()
 	buttonHeight := gui.ButtonHeight()
 	var x, y int
 	vbox := gui.MakeVBox(x, y, width, height, gui.Pad)
+	topSpacer := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, 1)
+	vbox.Fixed(topSpacer, 1)
 	hbox := me.makeButtonPanel(width, 0)
 	vbox.Fixed(hbox, buttonHeight)
 	// TODO
-	me.makeStatusBar(width, height)
-	vbox.Fixed(me.statusBar, buttonHeight)
+	hbox = me.makeStatusBar(width, height)
+	vbox.Fixed(hbox, buttonHeight)
 	vbox.End()
 	me.mainVBox = vbox
 }
@@ -73,6 +74,8 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	labelWidth := (gui.LabelWidth() * 3) / 2
 	x := 0
 	hbox := gui.MakeHBox(x, y, width, buttonHeight, gui.Pad)
+	pad := fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // left pad
+	hbox.Fixed(pad, 1)
 	findButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
 		"&Find")
 	findButton.SetCallback(me.onFind)
@@ -99,13 +102,21 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 		"&Quit")
 	quitButton.SetCallback(me.onQuit)
 	hbox.Fixed(quitButton, labelWidth)
+	pad = fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // right pad
+	hbox.Fixed(pad, 1)
 	hbox.End()
 	return hbox
 }
 
-func (me *App) makeStatusBar(width, y int) {
+func (me *App) makeStatusBar(width, y int) *fltk.Flex {
 	buttonHeight := gui.ButtonHeight()
+	hbox := gui.MakeHBox(0, 0, width, buttonHeight, gui.Pad)
+	pad := fltk.NewBox(fltk.FLAT_BOX, 0, 0, 1, buttonHeight)
+	hbox.Fixed(pad, 1)
 	me.statusBar = fltk.NewBox(fltk.DOWN_FRAME, 0, y-buttonHeight, width,
 		buttonHeight)
 	me.statusBar.SetAlign(fltk.ALIGN_LEFT | fltk.ALIGN_INSIDE)
+	pad = fltk.NewBox(fltk.FLAT_BOX, width-2, 0, 1, buttonHeight)
+	hbox.Fixed(pad, 1)
+	return hbox
 }

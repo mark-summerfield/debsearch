@@ -4,7 +4,6 @@ go 1.21.1
 
 require (
 	github.com/go-ini/ini v1.67.0
-	github.com/gonutz/w32/v2 v2.10.0
 	github.com/mark-summerfield/clip v1.3.1
 	github.com/mark-summerfield/gong v1.5.0
 	github.com/mark-summerfield/gset v1.0.0
