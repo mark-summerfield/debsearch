@@ -1,4 +1,3 @@
-# - gui with fltk?
 # - tui with bubbletea?
 
 pkgs.go
@@ -13,11 +12,28 @@ cmd/cli/debsearch.go
 # Filter out non-free sections & add [ ] Include Non-Free checkbox.
 # If user checks the checkbox, go through their chosen sections and for
 # each one, s, add non-free/s
+
+# TODO button icons
 cmd/gui/DebFind.go
+cmd/gui/app.go
+cmd/gui/actions.go
+cmd/gui/config_form.go
+cmd/gui/config.go
+cmd/gui/consts.go
+cmd/gui/gui/about_form.go
+cmd/gui/gui/about_html_linux.go
+cmd/gui/gui/about_html_win.go
+cmd/gui/gui/ask_form.go
+cmd/gui/gui/consts.go
+cmd/gui/gui/info_form.go
+cmd/gui/gui/question.svg
+cmd/gui/gui/util.go
 
 README.md
 
 st.sh
+
+go.mod
 
 build.sh # TODO DebFind
 deploy.sh # TODO DebFind
