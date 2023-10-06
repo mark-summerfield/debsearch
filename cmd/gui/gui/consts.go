@@ -7,6 +7,7 @@ import _ "embed"
 
 const (
 	Pad    = 5
+	Margin = 3
 	Border = 8
 )
 

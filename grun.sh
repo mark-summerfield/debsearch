@@ -1,3 +1,3 @@
 cd cmd/gui
-go run .
+go run . --debug
 cd ../..

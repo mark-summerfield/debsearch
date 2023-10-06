@@ -41,21 +41,21 @@ func makeAskForm(title, bodyText, iconSvg string, textSize int, text1,
 	window := fltk.NewWindow(width, height)
 	window.SetLabel(title)
 	AddWindowIcon(window, iconSvg)
-	vbox := MakeVBox(0, 0, width, height, Pad)
+	vbox := MakeVBox(0, 0, width, height)
 	bodyBox := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, height-buttonHeight)
 	bodyBox.SetImage(ImageForSvgText(questionSvg, 64))
 	bodyBox.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
 	bodyBox.SetLabel(bodyText)
 	bodyBox.SetLabelSize(textSize)
 	y := height - (buttonHeight * 3 / 2)
-	hbox := MakeHBox(0, y, width, buttonHeight, Pad)
+	hbox := MakeHBox(0, y, width, buttonHeight)
 	var spacerWidth int
 	if text3 == "" {
 		spacerWidth = (width - (2 * buttonWidth)) / 2
 	} else {
 		spacerWidth = (width - (3 * buttonWidth)) / 2
 	}
-	leftSpacer := MakeHBox(0, y, spacerWidth, buttonHeight, 0)
+	leftSpacer := MakeHBox(0, y, spacerWidth, buttonHeight)
 	leftSpacer.End()
 	button1 := fltk.NewReturnButton(0, 0, buttonHeight, buttonWidth, text1)
 	button1.SetCallback(func() { *result = BUTTON_ONE; window.Destroy() })
@@ -71,7 +71,7 @@ func makeAskForm(title, bodyText, iconSvg string, textSize int, text1,
 		})
 	}
 	righttSpacer := MakeHBox(spacerWidth+buttonWidth, y, spacerWidth,
-		buttonHeight, 0)
+		buttonHeight)
 	righttSpacer.End()
 	hbox.Fixed(button1, buttonWidth)
 	hbox.Fixed(button2, buttonWidth)

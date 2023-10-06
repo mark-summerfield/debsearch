@@ -9,7 +9,7 @@ import (
 
 func ButtonHeight() int {
 	_, height := fltk.MeasureText("X", false)
-	return int(float64(height) * 2.25)
+	return int(float64(height)*2.25) + Margin
 }
 
 func ButtonWidth() int {
@@ -72,19 +72,19 @@ func MakeSep(y int, hbox *fltk.Flex) {
 	hbox.Fixed(sep, Pad)
 }
 
-func MakeHBox(x, y, width, height, spacing int) *fltk.Flex {
-	return makeVHBox(fltk.ROW, x, y, width, height, spacing)
+func MakeHBox(x, y, width, height int) *fltk.Flex {
+	return makeVHBox(fltk.ROW, x, y, width, height)
 }
 
-func MakeVBox(x, y, width, height, spacing int) *fltk.Flex {
-	return makeVHBox(fltk.COLUMN, x, y, width, height, spacing)
+func MakeVBox(x, y, width, height int) *fltk.Flex {
+	return makeVHBox(fltk.COLUMN, x, y, width, height)
 }
 
-func makeVHBox(kind fltk.FlexType, x, y, width, height,
-	spacing int) *fltk.Flex {
+func makeVHBox(kind fltk.FlexType, x, y, width, height int) *fltk.Flex {
 	box := fltk.NewFlex(x, y, width, height)
 	box.SetType(kind)
-	box.SetSpacing(spacing)
+	box.SetSpacing(Pad)
+	box.SetMargin(Margin, Margin)
 	return box
 }
 

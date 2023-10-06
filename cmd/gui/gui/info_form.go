@@ -20,21 +20,21 @@ func MakeInfoForm(title, appName, descHtml, iconSvg string, width, height,
 	buttonWidth := ButtonWidth()
 	buttonHeight := ButtonHeight()
 	returnButtonWidth := ReturnButtonWidth()
-	vbox := MakeVBox(0, 0, width, height, Pad)
+	vbox := MakeVBox(0, 0, width, height)
 	view := fltk.NewHelpView(0, 0, width, height-buttonHeight)
 	view.TextFont(fltk.HELVETICA)
 	view.TextSize(textSize)
 	view.SetValue(descHtml)
 	y := height - buttonHeight
-	hbox := MakeHBox(0, y, width, buttonHeight, Pad)
+	hbox := MakeHBox(0, y, width, buttonHeight)
 	spacerWidth := (width - returnButtonWidth) / 2
-	leftSpacer := MakeHBox(0, y, spacerWidth, buttonHeight, 0)
+	leftSpacer := MakeHBox(0, y, spacerWidth, buttonHeight)
 	leftSpacer.End()
 	button := fltk.NewReturnButton(0, 0, buttonHeight, returnButtonWidth,
 		"&Close")
 	button.SetCallback(func() { window.Destroy() })
 	righttSpacer := MakeHBox(spacerWidth+returnButtonWidth, y, spacerWidth,
-		buttonHeight, 0)
+		buttonHeight)
 	righttSpacer.End()
 	hbox.Fixed(button, buttonWidth)
 	hbox.End()

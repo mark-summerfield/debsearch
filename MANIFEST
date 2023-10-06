@@ -1,4 +1,4 @@
-# - tui with bubbletea?
+# tui with bubbletea?
 
 pkgs.go
 pkg.go
@@ -9,7 +9,7 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-# Filter out non-free sections & add [ ] Include Non-Free checkbox.
+# TODO Filter out non-free sections & add [ ] Include Non-Free checkbox.
 # If user checks the checkbox, go through their chosen sections and for
 # each one, s, add non-free/s
 
@@ -19,6 +19,7 @@ cmd/gui/actions.go
 cmd/gui/config_form.go
 cmd/gui/config.go
 cmd/gui/consts.go
+
 cmd/gui/help.html
 cmd/gui/gui/about_form.go
 cmd/gui/gui/about_html_linux.go
