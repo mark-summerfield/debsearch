@@ -19,6 +19,5 @@ const (
 
 var (
 	Err101 = errors.New("E101: failed to open packages file")
-	Err102 = errors.New("E102: failed to open descriptions file")
-	Err103 = errors.New("E103: no package files given")
+	Err102 = errors.New("E102: no package files given")
 )

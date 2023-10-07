@@ -9,7 +9,7 @@ import (
 
 func ButtonHeight() int {
 	_, height := fltk.MeasureText("X", false)
-	return int(float64(height)*2.25) + Margin
+	return int(float64(height)*2.25) + (2 * Margin)
 }
 
 func ButtonWidth() int {

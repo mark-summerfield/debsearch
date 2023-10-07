@@ -5,12 +5,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/pwiecz/go-fltk"
 )
 
 func main() {
+	log.SetFlags(0)
 	args := os.Args
 	if len(args) > 1 && args[1] != "--debug" {
 		args = args[2:]

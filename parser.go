@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -25,7 +26,7 @@ type parser struct {
 
 func parse(filepairs ...FilePair) (Pkgs, error) {
 	if len(filepairs) == 0 {
-		return Pkgs{}, Err103
+		return Pkgs{}, Err102
 	}
 	parser := &parser{pkgs: newPkgs(), descForPkgs: map[string]string{}}
 	return parser.parse(filepairs...)
@@ -74,12 +75,7 @@ func (me *parser) readPackages(filename string) {
 }
 
 func (me *parser) readDescriptions(filename string) {
-	descForPkgs, err := readDescriptions(filename)
-	if err != nil {
-		me.errMutex.Lock()
-		defer me.errMutex.Unlock()
-		me.err = errors.Join(err)
-	} else {
+	if descForPkgs := readDescriptions(filename); len(descForPkgs) > 0 {
 		me.descForPkgsMutex.Lock()
 		defer me.descForPkgsMutex.Unlock()
 		for name, desc := range descForPkgs {
@@ -157,13 +153,14 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) {
 	}
 }
 
-func readDescriptions(filename string) (map[string]string, error) {
+func readDescriptions(filename string) map[string]string {
+	descForPkg := map[string]string{}
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", Err102, err)
+		log.Printf("warning: failed to open descriptions file: %s\n", err)
+		return descForPkg
 	}
 	defer file.Close()
-	descForPkg := map[string]string{}
 	name := ""
 	longDesc := ""
 	scanner := bufio.NewScanner(file)
@@ -189,5 +186,5 @@ func readDescriptions(filename string) (map[string]string, error) {
 	if name != "" && longDesc != "" {
 		descForPkg[name] = longDesc
 	}
-	return descForPkg, nil
+	return descForPkg
 }
