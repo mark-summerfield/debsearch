@@ -69,8 +69,12 @@ func (me *parser) readPackages(filename string) {
 		for name, pkg := range pkgs.Pkgs {
 			me.pkgs.Pkgs[name] = pkg
 		}
-		me.pkgs.Sections.Unite(pkgs.Sections)
-		me.pkgs.Tags.Unite(pkgs.Tags)
+		for section, count := range pkgs.SectionsAndCounts {
+			me.pkgs.SectionsAndCounts[section] += count
+		}
+		for tag, count := range pkgs.TagsAndCounts {
+			me.pkgs.TagsAndCounts[tag] += count
+		}
 	}
 }
 
@@ -91,23 +95,26 @@ func readPackages(filename string) (Pkgs, error) {
 		return pkgs, fmt.Errorf("%w: %s", Err101, err)
 	}
 	defer file.Close()
+	inTags := false
 	pkg := NewPkg()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
+			inTags = false
 			continue
 		}
 		if strings.HasPrefix(line, packagePrefix) {
+			inTags = false
 			if pkg.Name != "" && pkg.IsValid() {
 				pkgs.Pkgs[pkg.Name] = pkg.Copy()
 				pkg.Clear()
 			}
 			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
-		} else if strings.HasPrefix(line, " ") {
+		} else if inTags && strings.HasPrefix(line, " ") {
 			addTags(pkg, line, &pkgs)
 		} else {
-			maybeAddKeyValue(pkg, line, &pkgs)
+			inTags = maybeAddKeyValue(pkg, line, &pkgs)
 		}
 	}
 	if pkg.IsValid() {
@@ -122,12 +129,12 @@ func addTags(pkg *pkg, line string, pkgs *Pkgs) {
 		if item != "" {
 			item = strings.ReplaceAll(item, "::", "/")
 			pkg.Tags.Add(item)
-			pkgs.Tags.Add(item)
+			pkgs.TagsAndCounts[item]++
 		}
 	}
 }
 
-func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) {
+func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) bool {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
@@ -141,16 +148,18 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) {
 				pkg.Size = gong.StrToInt(value, 0)
 			case "Section":
 				pkg.Section = value
-				pkgs.Sections.Add(value)
+				pkgs.SectionsAndCounts[value]++
 			case "Size":
 				pkg.DownloadSize = gong.StrToInt(value, 0)
 			case "Tag":
 				addTags(pkg, value, pkgs)
+				return true
 			case "Version":
 				pkg.Version = value
 			}
 		}
 	}
+	return false
 }
 
 func readDescriptions(filename string) map[string]string {

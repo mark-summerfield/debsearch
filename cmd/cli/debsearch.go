@@ -12,7 +12,6 @@ import (
 	"github.com/mark-summerfield/clip"
 	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/gong"
-	"github.com/mark-summerfield/gset"
 )
 
 func main() {
@@ -27,8 +26,8 @@ func main() {
 	t := time.Now()
 	pkgs, err := ds.NewPkgs(pairs...)
 	gong.CheckError("failed to read package files", err)
-	maybePrintSections(config, pkgs.Sections)
-	maybePrintTags(config, pkgs.Tags)
+	maybePrintSections(config, pkgs.SectionsAndCounts)
+	maybePrintTags(config, pkgs.TagsAndCounts)
 	elapsed := time.Since(t)
 	if config.IsSearch() {
 		search(config, pkgs, elapsed)
@@ -38,24 +37,36 @@ func main() {
 	}
 }
 
-func maybePrintSections(config *Config, sections gset.Set[string]) {
+func maybePrintSections(config *Config, sectionsAndCounts map[string]int) {
 	if config.listSections {
 		if config.verbose {
-			fmt.Printf("Sections (%d):\n", len(sections))
+			fmt.Printf("Sections (%d):\n", len(sectionsAndCounts))
 		}
-		for _, section := range sections.ToSortedSlice() {
-			fmt.Println(section)
+		sections := gong.SortedMapKeys(sectionsAndCounts)
+		for _, section := range sections {
+			if config.verbose {
+				count := sectionsAndCounts[section]
+				fmt.Printf("%s (%s)\n", section, gong.Commas(count))
+			} else {
+				fmt.Println(section)
+			}
 		}
 	}
 }
 
-func maybePrintTags(config *Config, tags gset.Set[string]) {
+func maybePrintTags(config *Config, tagsAndCounts map[string]int) {
 	if config.listTags {
 		if config.verbose {
-			fmt.Printf("Tags (%d):\n", len(tags))
+			fmt.Printf("Tags (%d):\n", len(tagsAndCounts))
 		}
-		for _, tag := range tags.ToSortedSlice() {
-			fmt.Println(tag)
+		tags := gong.SortedMapKeys(tagsAndCounts)
+		for _, tag := range tags {
+			if config.verbose {
+				count := tagsAndCounts[tag]
+				fmt.Printf("%s (%s)\n", tag, gong.Commas(count))
+			} else {
+				fmt.Println(tag)
+			}
 		}
 	}
 }
@@ -92,9 +103,11 @@ func getConfig() *Config {
 	allWordsOpt := parser.Flag("all-words", "Match all the "+
 		"given words [default: match any given word].")
 	allWordsOpt.SetShortName(clip.NoShortName)
-	listTagsOpt := parser.Flag("list-tags", "Print tag names.")
+	listTagsOpt := parser.Flag("list-tags",
+		"Print tag names (and how many packages have each tag).")
 	listTagsOpt.SetShortName(clip.NoShortName)
-	listSectionsOpt := parser.Flag("list-sections", "Print section names.")
+	listSectionsOpt := parser.Flag("list-sections",
+		"Print section names (and how many packages are in each section).")
 	listSectionsOpt.SetShortName(clip.NoShortName)
 	verboseOpt := parser.Flag("verbose",
 		"Print number of packages and how long to read them.")

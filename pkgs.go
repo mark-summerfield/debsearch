@@ -3,17 +3,16 @@
 
 package debsearch
 
-import "github.com/mark-summerfield/gset"
-
 type Pkgs struct {
-	Pkgs     map[string]*pkg
-	Sections gset.Set[string]
-	Tags     gset.Set[string]
+	Pkgs              map[string]*pkg
+	SectionsAndCounts map[string]int
+	TagsAndCounts     map[string]int
 }
 
 func newPkgs() Pkgs {
-	return Pkgs{Pkgs: map[string]*pkg{}, Sections: gset.New[string](),
-		Tags: gset.New[string]()}
+	return Pkgs{Pkgs: map[string]*pkg{},
+		SectionsAndCounts: map[string]int{},
+		TagsAndCounts:     map[string]int{}}
 }
 
 func NewPkgs(filepairs ...FilePair) (Pkgs, error) {
