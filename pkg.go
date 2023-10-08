@@ -51,6 +51,9 @@ func (me *pkg) IsValid() bool {
 
 func (me *pkg) Words() gset.Set[string] {
 	words := gset.New[string]()
+	for _, word := range strings.Split(me.Name, "-") {
+		words.Add(strings.ToLower(word))
+	}
 	for _, word := range strings.Fields(me.ShortDesc) {
 		words.Add(strings.ToLower(word))
 	}
