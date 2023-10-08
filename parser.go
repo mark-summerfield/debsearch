@@ -111,8 +111,10 @@ func readPackages(filename string) (Pkgs, error) {
 				pkg.Clear()
 			}
 			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
-		} else if inTags && strings.HasPrefix(line, " ") {
-			addTags(pkg, line, &pkgs)
+		} else if strings.HasPrefix(line, " ") {
+			if inTags {
+				addTags(pkg, line, &pkgs)
+			}
 		} else {
 			inTags = maybeAddKeyValue(pkg, line, &pkgs)
 		}
