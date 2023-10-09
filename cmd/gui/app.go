@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/debsearch/cmd/gui/gui"
@@ -14,10 +15,13 @@ import (
 
 type App struct {
 	*fltk.Window
-	config    *Config
-	pkgs      *ds.Pkgs
-	mainVBox  *fltk.Flex
-	statusBar *fltk.Box
+	config             *Config
+	pkgs               *ds.Pkgs
+	mainVBox           *fltk.Flex
+	statusBar          *fltk.Box
+	sectionsLabel      *fltk.Box
+	sectionsBrowser    *fltk.MultiBrowser
+	incNonFreeCheckbox *fltk.CheckButton
 }
 
 func newApp(config *Config) *App {
@@ -35,9 +39,18 @@ func (me *App) loadPackages() {
 		me.onError(err)
 	} else {
 		me.pkgs = &pkgs
-		// TODO populate Sections & Tags widgets
 		me.onInfo(fmt.Sprintf("Read %s packages.\n",
 			gong.Commas(len(pkgs.Pkgs))), false)
+		me.sectionsBrowser.Clear()
+		for _, section := range gong.SortedMapKeys(pkgs.SectionsAndCounts) {
+			if !strings.HasPrefix(section, nonfreePrefix) {
+				me.sectionsBrowser.Add(fmt.Sprintf("%s (%s)", section,
+					gong.Commas(pkgs.SectionsAndCounts[section])))
+			}
+		}
+		me.sectionsLabel.SetLabel(fmt.Sprintf("Sections (%s)",
+			gong.Commas(len(pkgs.SectionsAndCounts))))
+		// TODO populate Tags widget
 	}
 }
 
@@ -115,16 +128,9 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	tile := fltk.NewTile(x, y, width, height)
 	height /= 3
 	y = 0
-	vbox := gui.MakeVBox(x, y, width, height)
-	ifDebug(me.config.debug, vbox, fltk.YELLOW)
-	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Sections")
-	//TODO
-	// - List of checkable sections (excluding non-free)
-	// - [ ] Include Non-Free
-	// - [Select All] [Unselect All]
-	vbox.End()
+	me.makeSectionsPanel(x, y, width, height)
 	y += height
-	vbox = gui.MakeVBox(x, y, width, height)
+	vbox := gui.MakeVBox(x, y, width, height)
 	ifDebug(me.config.debug, vbox, fltk.GREEN)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Tags")
 	//TODO
@@ -140,6 +146,36 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	// - Match (*) All ( ) Any
 	vbox.End()
 	tile.End()
+}
+
+func (me *App) makeSectionsPanel(x, y, width, height int) {
+	buttonHeight := gui.ButtonHeight()
+	labelWidth := (gui.LabelWidth() * 3) / 2
+	vbox := gui.MakeVBox(x, y, width, height)
+	vbox.SetBox(fltk.ENGRAVED_BOX)
+	me.sectionsLabel = fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth,
+		buttonHeight, "Sections")
+	vbox.Fixed(me.sectionsLabel, gui.LabelHeight())
+	me.sectionsBrowser = fltk.NewMultiBrowser(0, buttonHeight, width,
+		height)
+	hbox := gui.MakeHBox(x, height-(2*buttonHeight), width, buttonHeight)
+	selectAllSectionsButton := fltk.NewButton(0, 0, labelWidth,
+		buttonHeight, "Select All")
+	selectAllSectionsButton.SetCallback(func() {
+		selectOrClear(me.sectionsBrowser, true)
+	})
+	hbox.Fixed(selectAllSectionsButton, labelWidth)
+	clearSectionsButton := fltk.NewButton(labelWidth, 0, labelWidth,
+		buttonHeight, "Clear")
+	clearSectionsButton.SetCallback(func() {
+		selectOrClear(me.sectionsBrowser, false)
+	})
+	hbox.Fixed(clearSectionsButton, labelWidth)
+	me.incNonFreeCheckbox = fltk.NewCheckButton(labelWidth*2, 0, labelWidth,
+		buttonHeight, "&Include Non-Free")
+	me.incNonFreeCheckbox.SetValue(me.config.IncludeNonFreeSections)
+	vbox.Fixed(hbox, buttonHeight)
+	vbox.End()
 }
 
 func (me *App) makeResultPanel(x, y, width, height int) {
@@ -174,11 +210,4 @@ func (me *App) makeStatusBar(width, y int) *fltk.Flex {
 	pad = fltk.NewBox(fltk.FLAT_BOX, width-2, 0, 1, buttonHeight)
 	hbox.Fixed(pad, 1)
 	return hbox
-}
-
-func ifDebug(debug bool, box *fltk.Flex, color fltk.Color) {
-	if debug {
-		box.SetBox(fltk.DOWN_BOX)
-		box.SetColor(color)
-	}
 }

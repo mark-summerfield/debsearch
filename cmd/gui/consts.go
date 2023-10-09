@@ -18,7 +18,8 @@ const (
 	url         = "https://github.com/mark-summerfield/debsearch"
 	author      = "Mark Summerfield"
 
-	tinyTimeout = 0.005
-	rowHeight   = 32
-	colWidth    = 80
+	tinyTimeout   = 0.005
+	rowHeight     = 32
+	colWidth      = 80
+	nonfreePrefix = "non-free/"
 )

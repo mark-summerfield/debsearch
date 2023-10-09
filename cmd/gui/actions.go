@@ -80,6 +80,7 @@ func (me *App) onQuit() {
 	me.config.Width = me.Window.W()
 	me.config.Height = me.Window.H()
 	me.config.Scale = fltk.ScreenScale(0)
+	me.config.IncludeNonFreeSections = me.incNonFreeCheckbox.Value()
 	me.config.save()
 	me.Window.Destroy()
 }

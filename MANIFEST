@@ -18,6 +18,7 @@ cmd/gui/app.go
 cmd/gui/actions.go
 cmd/gui/config_form.go
 cmd/gui/config.go
+cmd/gui/util.go
 cmd/gui/consts.go
 
 cmd/gui/help.html

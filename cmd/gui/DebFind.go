@@ -14,9 +14,9 @@ import (
 func main() {
 	log.SetFlags(0)
 	config := newConfig()
-	args := os.Args
-	if len(args) > 1 && args[1] == "--debug" {
-		config.debug = true
+	args := os.Args[1:]
+	if len(args) > 0 && args[0] == "--debug" {
+		config.debug = true // if using args follow with: args = args[1:]
 	}
 	if !config.debug {
 		defer func() {

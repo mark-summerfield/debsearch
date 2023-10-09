@@ -21,6 +21,10 @@ func ReturnButtonWidth() int {
 	return ButtonWidth() + Pad
 }
 
+func LabelHeight() int {
+	return (ButtonHeight() * 4) / 5
+}
+
 func LabelWidth() int {
 	width, _ := fltk.MeasureText("X", false)
 	return int(float64(width) * 7.5)
