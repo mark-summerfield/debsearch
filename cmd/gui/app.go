@@ -41,17 +41,21 @@ func (me *App) loadPackages() {
 		me.pkgs = &pkgs
 		me.onInfo(fmt.Sprintf("Read %s packages.\n",
 			gong.Commas(len(pkgs.Pkgs))), false)
-		me.sectionsBrowser.Clear()
-		for _, section := range gong.SortedMapKeys(pkgs.SectionsAndCounts) {
-			if !strings.HasPrefix(section, nonfreePrefix) {
-				me.sectionsBrowser.Add(fmt.Sprintf("%s (%s)", section,
-					gong.Commas(pkgs.SectionsAndCounts[section])))
-			}
-		}
-		me.sectionsLabel.SetLabel(fmt.Sprintf("Sections (%s)",
-			gong.Commas(len(pkgs.SectionsAndCounts))))
+		me.populateSections()
 		// TODO populate Tags widget
 	}
+}
+
+func (me *App) populateSections() {
+	me.sectionsBrowser.Clear()
+	for _, section := range gong.SortedMapKeys(me.pkgs.SectionsAndCounts) {
+		if !strings.HasPrefix(section, nonfreePrefix) {
+			me.sectionsBrowser.Add(fmt.Sprintf("%s (%s)", section,
+				gong.Commas(me.pkgs.SectionsAndCounts[section])))
+		}
+	}
+	me.sectionsLabel.SetLabel(fmt.Sprintf("Sections (%s)",
+		gong.Commas(len(me.pkgs.SectionsAndCounts))))
 }
 
 func (me *App) makeMainWindow() {
@@ -166,7 +170,7 @@ func (me *App) makeSectionsPanel(x, y, width, height int) {
 	})
 	hbox.Fixed(selectAllSectionsButton, labelWidth)
 	clearSectionsButton := fltk.NewButton(labelWidth, 0, labelWidth,
-		buttonHeight, "Clear")
+		buttonHeight, "Clear All")
 	clearSectionsButton.SetCallback(func() {
 		selectOrClear(me.sectionsBrowser, false)
 	})
