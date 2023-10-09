@@ -22,4 +22,5 @@ const (
 	rowHeight     = 32
 	colWidth      = 80
 	nonfreePrefix = "non-free/"
+	todoSuffix    = "/TODO"
 )
