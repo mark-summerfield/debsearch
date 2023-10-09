@@ -13,9 +13,12 @@ import (
 
 func main() {
 	log.SetFlags(0)
+	config := newConfig()
 	args := os.Args
-	if len(args) > 1 && args[1] != "--debug" {
-		args = args[2:]
+	if len(args) > 1 && args[1] == "--debug" {
+		config.debug = true
+	}
+	if !config.debug {
 		defer func() {
 			if r := recover(); r != nil {
 				message := fmt.Sprintf("Unrecoverable error: %s", r)
@@ -23,13 +26,10 @@ func main() {
 				fmt.Println(message)
 			}
 		}()
-	} else {
-		args = args[1:]
 	}
 	fltk.SetScheme("Oxy")
-	config := newConfig()
 	fltk.SetScreenScale(0, config.Scale)
-	app := newApp(config, args)
+	app := newApp(config)
 	app.Show()
 	fltk.Run()
 }

@@ -16,6 +16,7 @@ import (
 
 type Config struct {
 	filename               string
+	debug                  bool
 	X                      int
 	Y                      int
 	Width                  int

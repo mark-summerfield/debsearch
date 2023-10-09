@@ -20,7 +20,7 @@ type App struct {
 	statusBar *fltk.Box
 }
 
-func newApp(config *Config, args []string) *App {
+func newApp(config *Config) *App {
 	app := &App{Window: nil, config: config}
 	app.makeMainWindow()
 	app.makeWidgets()
@@ -112,11 +112,11 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 
 func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	buttonHeight := gui.ButtonHeight()
-	//tile := gui.MakeVBox(x, y, width, height)
 	tile := fltk.NewTile(x, y, width, height)
 	height /= 3
 	y = 0
 	vbox := gui.MakeVBox(x, y, width, height)
+	ifDebug(me.config.debug, vbox, fltk.YELLOW)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Sections")
 	//TODO
 	// - List of checkable sections (excluding non-free)
@@ -125,6 +125,7 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	vbox.End()
 	y += height
 	vbox = gui.MakeVBox(x, y, width, height)
+	ifDebug(me.config.debug, vbox, fltk.GREEN)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Tags")
 	//TODO
 	// - Tree of checkable tags
@@ -132,6 +133,7 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	vbox.End()
 	y += height
 	vbox = gui.MakeVBox(x, y, width, height)
+	ifDebug(me.config.debug, vbox, fltk.BLUE)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Words")
 	//TODO
 	// - Line edit for words
@@ -147,12 +149,14 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 	height /= 2
 	y = 0
 	vbox := gui.MakeVBox(x, y, width, height)
+	ifDebug(me.config.debug, vbox, fltk.MAGENTA)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight,
 		"Matching Packages")
 	//TODO list of packages (name, version, size, short desc)
 	vbox.End()
 	y += height
 	vbox = gui.MakeVBox(x, y, width, height)
+	ifDebug(me.config.debug, vbox, fltk.CYAN)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Description")
 	//TODO the currently selected package's long desc
 	vbox.End()
@@ -170,4 +174,11 @@ func (me *App) makeStatusBar(width, y int) *fltk.Flex {
 	pad = fltk.NewBox(fltk.FLAT_BOX, width-2, 0, 1, buttonHeight)
 	hbox.Fixed(pad, 1)
 	return hbox
+}
+
+func ifDebug(debug bool, box *fltk.Flex, color fltk.Color) {
+	if debug {
+		box.SetBox(fltk.DOWN_BOX)
+		box.SetColor(color)
+	}
 }
