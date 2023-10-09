@@ -9,7 +9,6 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-# TODO Use Boxes rather than Tiles (at least for now)
 # TODO Filter out non-free sections & add [ ] Include Non-Free checkbox.
 # If user checks the checkbox, go through their chosen sections and for
 # each one, s, add non-free/s

@@ -96,16 +96,19 @@ func readPackages(filename string) (Pkgs, error) {
 	}
 	defer file.Close()
 	inTags := false
+	inDesc := false
 	pkg := NewPkg()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
 			inTags = false
+			inDesc = false
 			continue
 		}
 		if strings.HasPrefix(line, packagePrefix) {
 			inTags = false
+			inDesc = false
 			if pkg.Name != "" && pkg.IsValid() {
 				pkgs.Pkgs[pkg.Name] = pkg.Copy()
 				pkg.Clear()
@@ -114,9 +117,11 @@ func readPackages(filename string) (Pkgs, error) {
 		} else if strings.HasPrefix(line, " ") {
 			if inTags {
 				addTags(pkg, line, &pkgs)
+			} else if inDesc {
+				pkg.LongDesc += getDesc(line)
 			}
 		} else {
-			inTags = maybeAddKeyValue(pkg, line, &pkgs)
+			inTags, inDesc = maybeAddKeyValue(pkg, line, &pkgs)
 		}
 	}
 	if pkg.IsValid() {
@@ -136,7 +141,7 @@ func addTags(pkg *pkg, line string, pkgs *Pkgs) {
 	}
 }
 
-func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) bool {
+func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) (bool, bool) {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
@@ -144,6 +149,7 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) bool {
 			switch key {
 			case "Description":
 				pkg.ShortDesc = value
+				return false, true
 			case "Homepage":
 				pkg.Url = value
 			case "Installed-Size":
@@ -155,13 +161,13 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) bool {
 				pkg.DownloadSize = gong.StrToInt(value, 0)
 			case "Tag":
 				addTags(pkg, value, pkgs)
-				return true
+				return true, false
 			case "Version":
 				pkg.Version = value
 			}
 		}
 	}
-	return false
+	return false, false
 }
 
 func readDescriptions(filename string) map[string]string {
@@ -187,15 +193,19 @@ func readDescriptions(filename string) map[string]string {
 			name = strings.TrimSpace(line[packagePrefixLen:])
 			longDesc = ""
 		} else if strings.HasPrefix(line, " ") {
-			line = strings.TrimSpace(line)
-			if line == "." {
-				line = "\n"
-			}
-			longDesc += line
+			longDesc += getDesc(line)
 		}
 	}
 	if name != "" && longDesc != "" {
 		descForPkg[name] = longDesc
 	}
 	return descForPkg
+}
+
+func getDesc(line string) string {
+	line = strings.TrimSpace(line)
+	if line == "." {
+		line = "\n"
+	}
+	return line
 }
