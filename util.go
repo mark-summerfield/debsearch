@@ -13,11 +13,13 @@ func stdFilePairs(withDescriptions bool) []FilePair {
 	glob := filepath.Join(listsPath, "*_Packages")
 	if matches, err := filepath.Glob(glob); err == nil {
 		for _, pkgFile := range matches {
-			descFile := ""
-			if withDescriptions {
-				descFile = descFileForPkgFile(pkgFile)
+			if !strings.Contains(pkgFile, "i386") {
+				descFile := ""
+				if withDescriptions {
+					descFile = descFileForPkgFile(pkgFile)
+				}
+				pairs = append(pairs, NewFilePair(pkgFile, descFile))
 			}
-			pairs = append(pairs, NewFilePair(pkgFile, descFile))
 		}
 	}
 	return pairs
