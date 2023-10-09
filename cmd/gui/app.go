@@ -56,16 +56,14 @@ func (me *App) makeWidgets() { // TODO set non-free checkbox from config
 	width := me.Window.W()
 	height := me.Window.H()
 	buttonHeight := gui.ButtonHeight()
-	var x, y int
-	vbox := gui.MakeVBox(x, y, width, height)
-	hbox := me.makeButtonPanel(width, y)
+	vbox := gui.MakeVBox(0, 0, width, height)
+	hbox := me.makeButtonPanel(width, 0)
 	vbox.Fixed(hbox, buttonHeight)
-	y += buttonHeight
 	tileHeight := height - (2 * buttonHeight)
-	tile := fltk.NewTile(0, y, width, tileHeight)
+	tile := fltk.NewTile(0, 0, width, tileHeight)
 	halfWidth := width / 2
-	me.makeCriteriaPanel(0, y, halfWidth, tileHeight)
-	me.makeResultPanel(halfWidth, y, halfWidth, tileHeight)
+	me.makeCriteriaPanel(0, 0, halfWidth, tileHeight)
+	me.makeResultPanel(halfWidth, 0, halfWidth, tileHeight)
 	tile.End()
 	hbox = me.makeStatusBar(width, height)
 	vbox.Fixed(hbox, buttonHeight)
@@ -118,7 +116,7 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	tile := fltk.NewTile(x, y, width, height)
 	height /= 3
 	y = 0
-	vbox := gui.MakeVBox(0, y, width, height)
+	vbox := gui.MakeVBox(x, y, width, height)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Sections")
 	//TODO
 	// - List of checkable sections (excluding non-free)
@@ -126,14 +124,14 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 	// - [Select All] [Unselect All]
 	vbox.End()
 	y += height
-	vbox = gui.MakeVBox(0, y, width, height)
+	vbox = gui.MakeVBox(x, y, width, height)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Tags")
 	//TODO
 	// - Tree of checkable tags
 	// - [Select All] [Unselect All] Match (*) All ( ) Any
 	vbox.End()
 	y += height
-	vbox = gui.MakeVBox(0, y, width, height)
+	vbox = gui.MakeVBox(x, y, width, height)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Words")
 	//TODO
 	// - Line edit for words
@@ -148,13 +146,13 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 	tile := fltk.NewTile(x, y, width, height)
 	height /= 2
 	y = 0
-	vbox := gui.MakeVBox(0, y, width, height)
+	vbox := gui.MakeVBox(x, y, width, height)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight,
 		"Matching Packages")
 	//TODO list of packages (name, version, size, short desc)
 	vbox.End()
 	y += height
-	vbox = gui.MakeVBox(0, y, width, height)
+	vbox = gui.MakeVBox(x, y, width, height)
 	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Description")
 	//TODO the currently selected package's long desc
 	vbox.End()
