@@ -236,12 +236,13 @@ func (me *App) makeWordsPanel(x, y, width, height int) {
 	vbox := gui.MakeVBox(x, y, width, height)
 	divider(vbox)
 	hbox := gui.MakeHBox(x, y, width, buttonHeight)
-	label := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Words:")
-	hbox.Fixed(label, labelWidth)
+	wordsLabel := gui.MakeAccelLabel(width, buttonHeight, "&Words:")
+	wordsLabel.SetCallback(func() { me.wordsInput.TakeFocus() })
+	hbox.Fixed(wordsLabel, labelWidth)
 	me.wordsInput = fltk.NewInput(x, y, width, buttonHeight)
 	hbox.End()
 	hbox = gui.MakeHBox(x, y, width, buttonHeight)
-	label = fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth, buttonHeight,
+	label := fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth, buttonHeight,
 		"Match:")
 	hbox.Fixed(label, labelWidth)
 	me.wordsMatchAllRadioButton = fltk.NewRadioRoundButton(x, 0, labelWidth,

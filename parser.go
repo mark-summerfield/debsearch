@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"sync"
@@ -174,7 +173,6 @@ func readDescriptions(filename string) map[string]string {
 	descForPkg := map[string]string{}
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Printf("warning: failed to open descriptions file: %s\n", err)
 		return descForPkg
 	}
 	defer file.Close()

@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
@@ -15,7 +14,6 @@ import (
 )
 
 func main() {
-	log.SetFlags(0)
 	config := getConfig()
 	var pairs []ds.FilePair
 	if config.query.Words.IsEmpty() {
