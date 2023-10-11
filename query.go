@@ -48,7 +48,7 @@ func (me *Query) Match(pkg *pkg) bool {
 		if intersection.IsEmpty() {
 			return false // no tags match
 		}
-		if me.TagsAnd && !intersection.Equal(pkg.Tags) {
+		if me.TagsAnd && !me.Tags.IsSubsetOf(pkg.Tags) {
 			return false // not all tags match
 		}
 	}
@@ -58,7 +58,7 @@ func (me *Query) Match(pkg *pkg) bool {
 		if intersection.IsEmpty() {
 			return false // no words match
 		}
-		if me.WordsAnd && !intersection.Equal(words) {
+		if me.WordsAnd && !me.Words.IsSubsetOf(words) {
 			return false // not all words match
 		}
 	}

@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/debsearch/cmd/gui/gui"
@@ -52,9 +53,38 @@ func (me *App) clearStatus() {
 }
 
 func (me *App) onFind() {
-	fmt.Println("onFind")
-	//TODO list of packages (name, size, short desc)
-	//TODO the currently selected package's name, version, short & long desc
+	me.packagesBrowser.Clear()
+	me.descView.SetValue(searchingHtml)
+	query := me.makeQuery()
+	pkgs := query.SelectFrom(me.pkgs)
+	if len(pkgs) == 0 {
+		me.descView.SetValue(noneFoundHtml)
+	} else {
+		//TODO list of packages (name, size, short desc)
+		//TODO select first package
+		//TODO the currently selected package's name, version, short & long desc
+	}
+	fmt.Println("onFind", query, len(pkgs))
+}
+
+func (me *App) makeQuery() *ds.Query {
+	query := ds.NewQuery()
+	sections := selected(me.sectionsBrowser)
+	query.Sections.Add(sections...)
+	if me.incNonFreeCheckbox.Value() {
+		for _, section := range sections {
+			if !strings.Contains(section, "/") {
+				query.Sections.Add(nonfreePrefix + section)
+			}
+		}
+	}
+	query.Tags.Add(selected(me.tagsBrowser)...)
+	query.TagsAnd = me.tagsMatchAllRadioButton.Value()
+	for _, word := range strings.Fields(me.wordsInput.Value()) {
+		query.Words.Add(strings.ToLower(word))
+	}
+	query.WordsAnd = me.wordsMatchAllRadioButton.Value()
+	return query
 }
 
 func (me *App) onConfigure() {

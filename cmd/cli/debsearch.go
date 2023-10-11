@@ -106,6 +106,8 @@ func search(config *Config, pkgs ds.Pkgs, elapsed time.Duration) {
 func getConfig() *Config {
 	parser := clip.NewParserVersion(ds.Version)
 	parser.LongDesc = "A tool for searching Debian packages."
+	debugOpt := parser.Flag("debug", "")
+	debugOpt.Hide()
 	archOpt := parser.Choice("arch",
 		"System arch(itecture) [default: "+ds.DefaultArch+"].",
 		strings.Fields(ds.Archs), ds.DefaultArch)
@@ -157,6 +159,9 @@ func getConfig() *Config {
 	}
 	if !config.IsValid() {
 		parser.OnHelp() // doesn't return
+	}
+	if debugOpt.Value() {
+		fmt.Println(config.query)
 	}
 	return &config
 }

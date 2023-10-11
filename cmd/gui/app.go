@@ -101,7 +101,7 @@ func (me *App) makeWidgets() {
 	vbox := gui.MakeVBox(0, 0, width, height)
 	hbox := me.makeButtonPanel(width, 0)
 	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
-	tileHeight := height - (2 * buttonHeight)
+	tileHeight := height - ((2 * buttonHeight) + (3 * gui.Margin))
 	tile := fltk.NewTile(0, 0, width, tileHeight)
 	halfWidth := width / 2
 	me.makeCriteriaPanel(0, 0, halfWidth, tileHeight)

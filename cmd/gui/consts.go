@@ -26,4 +26,7 @@ const (
 
 	initialDescHtml = "<p><font color=maroon>Choose any Section(s) " +
 		"and Tag(s) and enter any Words, then click <b>Find</b>.</font></p>"
+	searchingHtml = "<p><font color=green>Searching…</font></p>"
+	noneFoundHtml = "<p><font color=maroon>No matching packages found." +
+		"</font></p>"
 )

@@ -8,8 +8,8 @@ github.com/mark-summerfield/clip v1.3.1 h1:/rrNyGJD9lv2U0wvJGpBOA4ylHbO9ZX9jb/IA
 github.com/mark-summerfield/clip v1.3.1/go.mod h1:Lw+fBTcPgfZZdvrOmhfs6xany1LghhzJohLkf3Wx/Mw=
 github.com/mark-summerfield/gong v1.5.0 h1:sOyh3lpsAMxQH2Eh+ZCmAgboj4xFgpSbMs23jcvy9pY=
 github.com/mark-summerfield/gong v1.5.0/go.mod h1:72YkDglj79LfsGLYGCTcAt3gxlKDE/sooYQ/gVShkKg=
-github.com/mark-summerfield/gset v1.0.0 h1:HEX6J24jl2KjjcB8yaMh5vmLuxuCP0P5DMPsplSZRxo=
-github.com/mark-summerfield/gset v1.0.0/go.mod h1:jb1agQGrUL7sBHwlyAqttlg7k3tTRy1WcUhfQgpJdA8=
+github.com/mark-summerfield/gset v1.1.0 h1:pdCevKfjoOJnAQVuHRv0+5Jwju4ElwNm9pkqvGcG7ro=
+github.com/mark-summerfield/gset v1.1.0/go.mod h1:jb1agQGrUL7sBHwlyAqttlg7k3tTRy1WcUhfQgpJdA8=
 github.com/mattn/go-isatty v0.0.19 h1:JITubQf0MOLdlGRuRq+jtsDlekdYPia9ZFsB8h/APPA=
 github.com/mattn/go-isatty v0.0.19/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

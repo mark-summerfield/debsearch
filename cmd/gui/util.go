@@ -4,6 +4,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/mark-summerfield/debsearch/cmd/gui/gui"
 	"github.com/pwiecz/go-fltk"
 )
@@ -12,6 +14,20 @@ func selectOrClear(browser *fltk.MultiBrowser, sel bool) {
 	for i := 1; i <= browser.Size(); i++ {
 		browser.SetSelected(i, sel)
 	}
+}
+
+func selected(browser *fltk.MultiBrowser) []string {
+	selected := []string{}
+	for i := 1; i <= browser.Size(); i++ {
+		if browser.IsSelected(i) {
+			text := browser.Text(i)
+			if i := strings.IndexByte(text, '('); i > -1 {
+				text = strings.TrimSpace(text[:i])
+			}
+			selected = append(selected, text)
+		}
+	}
+	return selected
 }
 
 func selectedCount(browser *fltk.MultiBrowser) int {
