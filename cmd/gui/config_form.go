@@ -133,5 +133,6 @@ func (me *configForm) onClose() {
 		me.app.config.Arch = newArch
 		me.app.loadPackages()
 	}
+	me.app.descView.TextSize(me.app.config.TextSize)
 	me.Window.Destroy()
 }

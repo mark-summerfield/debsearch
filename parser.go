@@ -156,8 +156,6 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) (bool, bool) {
 			case "Section":
 				pkg.Section = value
 				pkgs.SectionsAndCounts[value]++
-			case "Size":
-				pkg.DownloadSize = gong.StrToInt(value, 0)
 			case "Tag":
 				addTags(pkg, value, pkgs)
 				return true, false

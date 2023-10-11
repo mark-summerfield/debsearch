@@ -29,6 +29,8 @@ type App struct {
 	wordsInput               *fltk.Input
 	wordsMatchAllRadioButton *fltk.RadioRoundButton
 	wordsMatchAnyRadioButton *fltk.RadioRoundButton
+	packagesBrowser          *fltk.HoldBrowser
+	descView                 *fltk.HelpView
 }
 
 func newApp(config *Config) *App {
@@ -98,7 +100,7 @@ func (me *App) makeWidgets() {
 	buttonHeight := gui.ButtonHeight()
 	vbox := gui.MakeVBox(0, 0, width, height)
 	hbox := me.makeButtonPanel(width, 0)
-	vbox.Fixed(hbox, buttonHeight)
+	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
 	tileHeight := height - (2 * buttonHeight)
 	tile := fltk.NewTile(0, 0, width, tileHeight)
 	halfWidth := width / 2
@@ -116,6 +118,7 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	labelWidth := (gui.LabelWidth() * 3) / 2
 	x := 0
 	hbox := gui.MakeHBox(x, y, width, buttonHeight)
+	hbox.SetBox(fltk.UP_FRAME)
 	pad := fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // left pad
 	hbox.Fixed(pad, 1)
 	findButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
@@ -167,7 +170,6 @@ func (me *App) makeSectionsPanel(x, y, width, height int) {
 	buttonHeight := gui.ButtonHeight()
 	labelWidth := (gui.LabelWidth() * 3) / 2
 	vbox := gui.MakeVBox(x, y, width, height)
-	divider(vbox)
 	me.sectionsLabel = fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth,
 		buttonHeight, "Sections")
 	vbox.Fixed(me.sectionsLabel, gui.LabelHeight())
@@ -277,22 +279,27 @@ func (me *App) makeWordsPanel(x, y, width, height int) {
 }
 
 func (me *App) makeResultPanel(x, y, width, height int) {
-	buttonHeight := gui.ButtonHeight()
-	//tile := gui.MakeVBox(x, y, width, height)
+	labelHeight := gui.LabelHeight()
 	tile := fltk.NewTile(x, y, width, height)
 	height /= 2
-	y = 0
 	vbox := gui.MakeVBox(x, y, width, height)
-	ifDebug(me.config.debug, vbox, fltk.MAGENTA)
-	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight,
-		"Matching Packages")
-	//TODO list of packages (name, version, size, short desc)
+	label := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
+		"Packages Found")
+	vbox.Fixed(label, labelHeight)
+	me.packagesBrowser = fltk.NewHoldBrowser(0, labelHeight, width,
+		height-labelHeight)
 	vbox.End()
 	y += height
 	vbox = gui.MakeVBox(x, y, width, height)
-	ifDebug(me.config.debug, vbox, fltk.CYAN)
-	fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, buttonHeight, "Description")
-	//TODO the currently selected package's long desc
+	divider(vbox)
+	label = fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
+		"Description")
+	vbox.Fixed(label, labelHeight)
+	me.descView = fltk.NewHelpView(0, labelHeight, width,
+		height-labelHeight)
+	me.descView.TextFont(fltk.HELVETICA)
+	me.descView.TextSize(me.config.TextSize)
+	me.descView.SetValue(initialDescHtml)
 	vbox.End()
 	tile.End()
 }

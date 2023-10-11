@@ -15,7 +15,6 @@ type pkg struct {
 	Name         string
 	Version      string
 	Size         int
-	DownloadSize int
 	Url          string
 	Section      string
 	Tags         gset.Set[string]
@@ -27,16 +26,14 @@ func NewPkg() *pkg { return &pkg{Tags: gset.New[string]()} }
 
 func (me *pkg) Copy() *pkg {
 	return &pkg{Name: me.Name, Version: me.Version, Size: me.Size,
-		DownloadSize: me.DownloadSize, Url: me.Url, Section: me.Section,
-		Tags: me.Tags.Copy(), ShortDesc: me.ShortDesc,
-		LongDesc: me.LongDesc}
+		Url: me.Url, Section: me.Section, Tags: me.Tags.Copy(),
+		ShortDesc: me.ShortDesc, LongDesc: me.LongDesc}
 }
 
 func (me *pkg) Clear() {
 	me.Name = ""
 	me.Version = ""
 	me.Size = 0
-	me.DownloadSize = 0
 	me.Url = ""
 	me.Section = ""
 	me.Tags.Clear()

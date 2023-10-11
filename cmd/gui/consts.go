@@ -23,4 +23,7 @@ const (
 	colWidth      = 80
 	nonfreePrefix = "non-free/"
 	todoSuffix    = "/TODO"
+
+	initialDescHtml = "<p><font color=maroon>Choose any Section(s) " +
+		"and Tag(s) and enter any Words, then click <b>Find</b>.</font></p>"
 )

@@ -53,6 +53,8 @@ func (me *App) clearStatus() {
 
 func (me *App) onFind() {
 	fmt.Println("onFind")
+	//TODO list of packages (name, size, short desc)
+	//TODO the currently selected package's name, version, short & long desc
 }
 
 func (me *App) onConfigure() {
