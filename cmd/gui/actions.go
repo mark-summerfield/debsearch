@@ -69,7 +69,7 @@ func (me *App) onAbout() {
 }
 
 func (me *App) onHelp() {
-	form := gui.MakeInfoForm("Help", appName, helpHtml, iconSvg, 500, 400,
+	form := gui.MakeInfoForm("Help", appName, helpHtml, iconSvg, 600, 550,
 		me.config.TextSize, true)
 	form.Show()
 }
