@@ -23,6 +23,8 @@ const (
 	colWidth      = 80
 	nonfreePrefix = "non-free/"
 	todoSuffix    = "/TODO"
+	light1        = 255
+	light2        = 52
 
 	initialDescHtml = "<p><font color=maroon>Choose any Section(s) " +
 		"and Tag(s) and enter any Words, then click <b>Find</b>.</font></p>"

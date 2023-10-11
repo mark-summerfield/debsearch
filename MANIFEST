@@ -7,13 +7,9 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-# TODO Filter out non-free sections & add [ ] Include Non-Free checkbox.
-# If user checks the checkbox, go through their chosen sections and for
-# each one, s, add non-free/s
-
 cmd/gui/DebFind.go
 cmd/gui/app.go
-cmd/gui/actions.go
+cmd/gui/actions.go # TODO onFind
 cmd/gui/config_form.go
 cmd/gui/config.go
 cmd/gui/util.go

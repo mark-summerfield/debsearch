@@ -56,15 +56,7 @@ func (me *App) onFind() {
 	me.packagesBrowser.Clear()
 	me.descView.SetValue(searchingHtml)
 	query := me.makeQuery()
-	pkgs := query.SelectFrom(me.pkgs)
-	if len(pkgs) == 0 {
-		me.descView.SetValue(noneFoundHtml)
-	} else {
-		//TODO list of packages (name, size, short desc)
-		//TODO select first package
-		//TODO the currently selected package's name, version, short & long desc
-	}
-	fmt.Println("onFind", query, len(pkgs))
+	me.updateResults(query)
 }
 
 func (me *App) makeQuery() *ds.Query {
@@ -85,6 +77,28 @@ func (me *App) makeQuery() *ds.Query {
 	}
 	query.WordsAnd = me.wordsMatchAllRadioButton.Value()
 	return query
+}
+
+func (me *App) updateResults(query *ds.Query) {
+	pkgs := query.SelectFrom(me.pkgs)
+	me.updatePackagesLabel(len(pkgs))
+	if len(pkgs) == 0 {
+		me.descView.SetValue(noneFoundHtml)
+	} else {
+		bg := light1
+		for _, pkg := range pkgs {
+			me.packagesBrowser.Add(fmt.Sprintf("@B%d@.%s • %s", bg,
+				pkg.Name, pkg.ShortDesc))
+			if bg == light1 {
+				bg = light2
+			} else {
+				bg = light1
+			}
+		}
+		//TODO list of packages (name, size, short desc)
+		//TODO select first package
+		//TODO the currently selected package's name, version, size, url, short & long desc
+	}
 }
 
 func (me *App) onConfigure() {

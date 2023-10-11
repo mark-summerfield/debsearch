@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mark-summerfield/gong"
 	"github.com/mark-summerfield/gset"
 )
 
@@ -61,6 +60,6 @@ func (me *pkg) Words() gset.Set[string] {
 }
 
 func (me *pkg) String() string {
-	return fmt.Sprintf("%s v%s %sKB %q %s", me.Name, me.Version,
-		gong.Commas(me.Size), me.ShortDesc, me.Url)
+	return fmt.Sprintf("%s v%s %s %q %s", me.Name, me.Version,
+		HumanSize(me.Size), me.ShortDesc, me.Url)
 }

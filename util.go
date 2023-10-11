@@ -6,6 +6,8 @@ package debsearch
 import (
 	"path/filepath"
 	"strings"
+
+	"github.com/mark-summerfield/gong"
 )
 
 func stdFilePairs(arch string, withDescriptions bool) []FilePair {
@@ -30,4 +32,18 @@ func descFileForPkgFile(filename string) string {
 		return prefix + "_i18n_Translation-en"
 	}
 	return ""
+}
+
+func HumanSize(size int) string {
+	units := "KB"
+	if size > 1024 {
+		size /= 1024
+		if size > 1024 {
+			size /= 1024
+			units = "GB"
+		} else {
+			units = "MB"
+		}
+	}
+	return gong.Commas(size) + units
 }

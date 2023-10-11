@@ -29,6 +29,7 @@ type App struct {
 	wordsInput               *fltk.Input
 	wordsMatchAllRadioButton *fltk.RadioRoundButton
 	wordsMatchAnyRadioButton *fltk.RadioRoundButton
+	packagesLabel            *fltk.Box
 	packagesBrowser          *fltk.HoldBrowser
 	descView                 *fltk.HelpView
 }
@@ -103,9 +104,9 @@ func (me *App) makeWidgets() {
 	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
 	tileHeight := height - ((2 * buttonHeight) + (3 * gui.Margin))
 	tile := fltk.NewTile(0, 0, width, tileHeight)
-	halfWidth := width / 2
-	me.makeCriteriaPanel(0, 0, halfWidth, tileHeight)
-	me.makeResultPanel(halfWidth, 0, halfWidth, tileHeight)
+	leftWidth := (width / 10) * 4
+	me.makeCriteriaPanel(0, 0, leftWidth, tileHeight)
+	me.makeResultPanel(leftWidth, 0, width-leftWidth, tileHeight)
 	tile.End()
 	hbox = me.makeStatusBar(width, height)
 	vbox.Fixed(hbox, buttonHeight)
@@ -283,16 +284,16 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 	tile := fltk.NewTile(x, y, width, height)
 	height /= 2
 	vbox := gui.MakeVBox(x, y, width, height)
-	label := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
+	me.packagesLabel = fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
 		"Packages Found")
-	vbox.Fixed(label, labelHeight)
+	vbox.Fixed(me.packagesLabel, labelHeight)
 	me.packagesBrowser = fltk.NewHoldBrowser(0, labelHeight, width,
 		height-labelHeight)
 	vbox.End()
 	y += height
 	vbox = gui.MakeVBox(x, y, width, height)
 	divider(vbox)
-	label = fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
+	label := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
 		"Description")
 	vbox.Fixed(label, labelHeight)
 	me.descView = fltk.NewHelpView(0, labelHeight, width,
@@ -302,6 +303,11 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 	me.descView.SetValue(initialDescHtml)
 	vbox.End()
 	tile.End()
+}
+
+func (me *App) updatePackagesLabel(count int) {
+	me.packagesLabel.SetLabel(fmt.Sprintf("Packages Found (%s)",
+		gong.Commas(count)))
 }
 
 func (me *App) makeStatusBar(width, y int) *fltk.Flex {
