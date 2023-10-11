@@ -64,7 +64,7 @@ func (me *App) populateSections() {
 			count++
 		}
 	}
-	me.sectionsLabel.SetLabel(fmt.Sprintf("Sections (%s)",
+	me.sectionsLabel.SetLabel(fmt.Sprintf("Sections (0/%s)",
 		gong.Commas(count)))
 }
 
@@ -78,7 +78,7 @@ func (me *App) populateTags() {
 			count++
 		}
 	}
-	me.tagsLabel.SetLabel(fmt.Sprintf("Tags (%s)", gong.Commas(count)))
+	me.tagsLabel.SetLabel(fmt.Sprintf("Tags (0/%s)", gong.Commas(count)))
 }
 
 func (me *App) makeMainWindow() {
@@ -173,17 +173,22 @@ func (me *App) makeSectionsPanel(x, y, width, height int) {
 	vbox.Fixed(me.sectionsLabel, gui.LabelHeight())
 	me.sectionsBrowser = fltk.NewMultiBrowser(0, buttonHeight, width,
 		height)
+	me.sectionsBrowser.SetCallback(func() {
+		me.updateSectionsLabel(selectedCount(me.sectionsBrowser))
+	})
 	hbox := gui.MakeHBox(x, height-(2*buttonHeight), width, buttonHeight)
 	selectAllSectionsButton := fltk.NewButton(0, 0, labelWidth,
 		buttonHeight, "Select All")
 	selectAllSectionsButton.SetCallback(func() {
 		selectOrClear(me.sectionsBrowser, true)
+		me.updateSectionsLabel(me.sectionsBrowser.Size())
 	})
 	hbox.Fixed(selectAllSectionsButton, labelWidth)
 	clearSectionsButton := fltk.NewButton(labelWidth, 0, labelWidth,
 		buttonHeight, "Clear All")
 	clearSectionsButton.SetCallback(func() {
 		selectOrClear(me.sectionsBrowser, false)
+		me.updateSectionsLabel(0)
 	})
 	hbox.Fixed(clearSectionsButton, labelWidth)
 	padBox(hbox, gui.Margin)
@@ -193,6 +198,11 @@ func (me *App) makeSectionsPanel(x, y, width, height int) {
 	hbox.End()
 	vbox.Fixed(hbox, buttonHeight)
 	vbox.End()
+}
+
+func (me *App) updateSectionsLabel(count int) {
+	me.sectionsLabel.SetLabel(fmt.Sprintf("Sections (%s/%s)",
+		gong.Commas(count), gong.Commas(me.sectionsBrowser.Size())))
 }
 
 func (me *App) makeTagsPanel(x, y, width, height int) {
@@ -205,17 +215,22 @@ func (me *App) makeTagsPanel(x, y, width, height int) {
 	vbox.Fixed(me.tagsLabel, gui.LabelHeight())
 	me.tagsBrowser = fltk.NewMultiBrowser(0, buttonHeight, width,
 		height)
+	me.tagsBrowser.SetCallback(func() {
+		me.updateTagsLabel(selectedCount(me.tagsBrowser))
+	})
 	hbox := gui.MakeHBox(x, height-(2*buttonHeight), width, buttonHeight)
 	selectAllTagsButton := fltk.NewButton(0, 0, labelWidth,
 		buttonHeight, "Select All")
 	selectAllTagsButton.SetCallback(func() {
 		selectOrClear(me.tagsBrowser, true)
+		me.updateTagsLabel(me.tagsBrowser.Size())
 	})
 	hbox.Fixed(selectAllTagsButton, labelWidth)
 	clearTagsButton := fltk.NewButton(labelWidth, 0, labelWidth,
 		buttonHeight, "Clear All")
 	clearTagsButton.SetCallback(func() {
 		selectOrClear(me.tagsBrowser, false)
+		me.updateTagsLabel(0)
 	})
 	hbox.Fixed(clearTagsButton, labelWidth)
 	padBox(hbox, gui.Margin)
@@ -228,6 +243,11 @@ func (me *App) makeTagsPanel(x, y, width, height int) {
 	hbox.End()
 	vbox.Fixed(hbox, buttonHeight)
 	vbox.End()
+}
+
+func (me *App) updateTagsLabel(count int) {
+	me.tagsLabel.SetLabel(fmt.Sprintf("Tagss (%s/%s)",
+		gong.Commas(count), gong.Commas(me.tagsBrowser.Size())))
 }
 
 func (me *App) makeWordsPanel(x, y, width, height int) {
