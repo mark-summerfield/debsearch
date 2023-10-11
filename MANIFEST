@@ -1,3 +1,4 @@
+# TODO pkg.Words: replace all punct with space before Fields
 pkgs.go
 pkg.go
 filepair.go
@@ -7,6 +8,10 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
+# TODO get rid of statusbar: onError, onInfo should use descView; get
+# rid of clearStatus
+# TODO for desc continuation lines drop only the leading space & always
+# *prepend* \n
 cmd/gui/DebFind.go
 cmd/gui/app.go
 cmd/gui/actions.go # TODO onFind
