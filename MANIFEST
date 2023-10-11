@@ -1,5 +1,3 @@
-# tui with bubbletea?
-
 pkgs.go
 pkg.go
 filepair.go

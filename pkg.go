@@ -64,6 +64,6 @@ func (me *pkg) Words() gset.Set[string] {
 }
 
 func (me *pkg) String() string {
-	return fmt.Sprintf("%s v%s %sKiB %q %s", me.Name, me.Version,
-		gong.Commas(me.Size/1024), me.ShortDesc, me.Url)
+	return fmt.Sprintf("%s v%s %sKB %q %s", me.Name, me.Version,
+		gong.Commas(me.Size), me.ShortDesc, me.Url)
 }
