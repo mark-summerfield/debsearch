@@ -20,6 +20,8 @@ cmd/gui/config.go
 cmd/gui/util.go
 cmd/gui/consts.go
 
+# TODO help.html: explain how searching works & the significance of the
+# section & tag counts
 cmd/gui/help.html
 cmd/gui/gui/about_form.go
 cmd/gui/gui/about_html_linux.go
