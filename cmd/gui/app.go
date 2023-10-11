@@ -41,7 +41,7 @@ func newApp(config *Config) *App {
 }
 
 func (me *App) loadPackages() {
-	pairs := ds.StdFilePairsWithDescriptions()
+	pairs := ds.StdFilePairsWithDescriptions(me.config.Arch)
 	if pkgs, err := ds.NewPkgs(pairs...); err != nil {
 		me.onError(err)
 	} else {

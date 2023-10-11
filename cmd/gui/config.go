@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-ini/ini"
+	ds "github.com/mark-summerfield/debsearch"
 	"github.com/mark-summerfield/gong"
 	"github.com/pwiecz/go-fltk"
 )
@@ -24,12 +25,13 @@ type Config struct {
 	Scale                  float32
 	TextSize               int
 	IncludeNonFreeSections bool
+	Arch                   string
 }
 
 func newConfig() *Config {
 	filename, found := gong.GetIniFile(domain, appName)
 	config := &Config{filename: filename, X: -1, Width: 800, Height: 600,
-		Scale: 1.0, TextSize: 14}
+		Scale: 1.0, TextSize: 14, Arch: ds.DefaultArch}
 	if found {
 		cfg, err := ini.Load(filename)
 		if err != nil {
