@@ -12,14 +12,14 @@ import (
 )
 
 type pkg struct {
-	Name         string
-	Version      string
-	Size         int
-	Url          string
-	Section      string
-	Tags         gset.Set[string]
-	ShortDesc    string
-	LongDesc     string
+	Name      string
+	Version   string
+	Size      int
+	Url       string
+	Section   string
+	Tags      gset.Set[string]
+	ShortDesc string
+	LongDesc  string
 }
 
 func NewPkg() *pkg { return &pkg{Tags: gset.New[string]()} }
