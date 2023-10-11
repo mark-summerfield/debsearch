@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-func stdFilePairs(withDescriptions bool) []FilePair {
+func stdFilePairs(arch string, withDescriptions bool) []FilePair {
 	pairs := []FilePair{}
-	glob := filepath.Join(listsPath, "*_Packages")
+	glob := filepath.Join(listsPath, "*"+arch+"_Packages")
 	if matches, err := filepath.Glob(glob); err == nil {
 		for _, pkgFile := range matches {
 			if !strings.Contains(pkgFile, "i386") {

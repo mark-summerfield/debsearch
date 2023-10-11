@@ -17,13 +17,14 @@ func main() {
 	config := getConfig()
 	var pairs []ds.FilePair
 	if config.query.Words.IsEmpty() {
-		pairs = ds.StdFilePairs()
+		pairs = ds.StdFilePairs(config.arch)
 	} else {
-		pairs = ds.StdFilePairsWithDescriptions()
+		pairs = ds.StdFilePairsWithDescriptions(config.arch)
 	}
 	t := time.Now()
 	pkgs, err := ds.NewPkgs(pairs...)
 	gong.CheckError("failed to read package files", err)
+	maybePrintArchs(config)
 	maybePrintSections(config, pkgs.SectionsAndCounts)
 	maybePrintTags(config, pkgs.TagsAndCounts)
 	elapsed := time.Since(t)
@@ -32,6 +33,21 @@ func main() {
 	} else if config.verbose {
 		fmt.Printf("searched %s pkgs in %s.\n", gong.Commas(len(pkgs.Pkgs)),
 			elapsed)
+	}
+}
+
+func maybePrintArchs(config *Config) {
+	if config.listArchs {
+		archs := strings.Fields(ds.Archs)
+		if config.verbose {
+			fmt.Printf("Archs (%d):\n", len(archs))
+		}
+		for _, arch := range archs {
+			if arch == ds.DefaultArch {
+				arch += " [default]"
+			}
+			fmt.Println(arch)
+		}
 	}
 }
 
@@ -90,6 +106,11 @@ func search(config *Config, pkgs ds.Pkgs, elapsed time.Duration) {
 func getConfig() *Config {
 	parser := clip.NewParserVersion(ds.Version)
 	parser.LongDesc = "A tool for searching Debian packages."
+	archOpt := parser.Choice("arch",
+		"System arch(itecture) [default: "+ds.DefaultArch+"].",
+		strings.Fields(ds.Archs), ds.DefaultArch)
+	listArchsOpt := parser.Flag("list-archs", "Print arch(itecture) names.")
+	listArchsOpt.SetShortName(clip.NoShortName)
 	sectionsOpt := parser.Str("sections", "Match any of the "+
 		"comma-separated list of sections [default: match any section].",
 		"")
@@ -117,7 +138,8 @@ func getConfig() *Config {
 		parser.OnError(err) // doesn't return
 		return nil          // never reached
 	}
-	config := Config{query: ds.NewQuery(), listTags: listTagsOpt.Value(),
+	config := Config{arch: archOpt.Value(), query: ds.NewQuery(),
+		listArchs: listArchsOpt.Value(), listTags: listTagsOpt.Value(),
 		listSections: listSectionsOpt.Value(), verbose: verboseOpt.Value()}
 	if sectionsOpt.Given() {
 		config.query.Sections.Add(
@@ -140,15 +162,18 @@ func getConfig() *Config {
 }
 
 type Config struct {
+	arch         string
 	query        *ds.Query
+	listArchs    bool
 	listTags     bool
 	listSections bool
 	verbose      bool
 }
 
 func (me *Config) IsValid() bool {
-	return me.listTags || me.listSections || !me.query.Sections.IsEmpty() ||
-		!me.query.Tags.IsEmpty() || !me.query.Words.IsEmpty()
+	return me.listArchs || me.listTags || me.listSections ||
+		!me.query.Sections.IsEmpty() || !me.query.Tags.IsEmpty() ||
+		!me.query.Words.IsEmpty()
 }
 
 func (me *Config) IsSearch() bool {
@@ -157,6 +182,7 @@ func (me *Config) IsSearch() bool {
 }
 
 func (me *Config) String() string {
-	return fmt.Sprintf("query=%s listTags=%t listSections=%t verbose=%t",
-		me.query, me.listTags, me.listSections, me.verbose)
+	return fmt.Sprintf("query=%s listArchs=%t listTags=%t "+
+		"listSections=%t verbose=%t",
+		me.query, me.listArchs, me.listTags, me.listSections, me.verbose)
 }
