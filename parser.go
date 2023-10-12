@@ -212,9 +212,9 @@ func readDescriptions(filename string) map[string]string {
 }
 
 func getDesc(line string) string {
-	line = strings.TrimSpace(line)
+	line = strings.TrimRight(line[1:], " \t\n")
 	if line == "." {
-		line = "\n"
+		line = ""
 	}
-	return line
+	return line + "\n"
 }

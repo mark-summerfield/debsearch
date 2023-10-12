@@ -9,8 +9,8 @@ cmd/cli/debsearch.go
 
 # TODO get rid of statusbar: onError, onInfo should use descView; get
 # rid of clearStatus
-# TODO for desc continuation lines drop only the leading space & always
-# *prepend* \n
+# TODO if found > 0, select first pkg
+# TODO set callback to populate descView whenever a found pkg is selected
 cmd/gui/DebFind.go
 cmd/gui/app.go
 cmd/gui/actions.go # TODO onFind
