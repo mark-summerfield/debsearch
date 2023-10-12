@@ -7,8 +7,6 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-# TODO get rid of statusbar: onError, onInfo should use descView; get
-# rid of clearStatus
 # TODO if found > 0, select first pkg
 # TODO set callback to populate descView whenever a found pkg is selected
 cmd/gui/DebFind.go

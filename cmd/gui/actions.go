@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"strings"
 
 	ds "github.com/mark-summerfield/debsearch"
@@ -33,28 +34,21 @@ func (me *App) onEvent(event fltk.Event) bool {
 	return false
 }
 
-func (me *App) onError(err error) {
-	me.statusBar.SetLabelColor(fltk.RED)
-	me.statusBar.SetLabel(err.Error())
-}
+func (me *App) onInfo(info string) { me.onMessage(info, "navy") }
 
-func (me *App) onInfo(info string, autoClear bool) {
-	me.statusBar.SetLabelColor(fltk.BLUE)
-	me.statusBar.SetLabel(info)
-	if autoClear {
-		fltk.AddTimeout(7, func() { me.clearStatus() })
-	}
-}
+func (me *App) onWarn(warn string) { me.onMessage(warn, "maroon") }
 
-func (me *App) clearStatus() {
-	me.statusBar.SetLabelColor(fltk.BLACK)
-	me.statusBar.SetLabel("")
+func (me *App) onError(err error) { me.onMessage(err.Error(), "red") }
+
+func (me *App) onMessage(msg, color string) {
+	me.descView.SetValue("<p><font color=" + color + ">" +
+		html.EscapeString(msg) + "</font></p>")
 	me.Redraw()
 }
 
 func (me *App) onFind() {
 	me.packagesBrowser.Clear()
-	me.descView.SetValue(searchingHtml)
+	me.onInfo("Searching…")
 	query := me.makeQuery()
 	me.updateResults(query)
 }
@@ -83,7 +77,7 @@ func (me *App) updateResults(query *ds.Query) {
 	pkgs := query.SelectFrom(me.pkgs)
 	me.updatePackagesLabel(len(pkgs))
 	if len(pkgs) == 0 {
-		me.descView.SetValue(noneFoundHtml)
+		me.onWarn("No matching packages found.")
 	} else {
 		bg := light1
 		for _, pkg := range pkgs {

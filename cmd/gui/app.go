@@ -18,7 +18,6 @@ type App struct {
 	config                   *Config
 	pkgs                     *ds.Pkgs
 	mainVBox                 *fltk.Flex
-	statusBar                *fltk.Box
 	sectionsLabel            *fltk.Box
 	sectionsBrowser          *fltk.MultiBrowser
 	incNonFreeCheckbox       *fltk.CheckButton
@@ -50,7 +49,7 @@ func (me *App) loadPackages() {
 	} else {
 		me.pkgs = &pkgs
 		me.onInfo(fmt.Sprintf("Read %s packages.\n",
-			gong.Commas(len(pkgs.Pkgs))), false)
+			gong.Commas(len(pkgs.Pkgs))))
 		me.populateSections()
 		me.populateTags()
 	}
@@ -102,14 +101,12 @@ func (me *App) makeWidgets() {
 	vbox := gui.MakeVBox(0, 0, width, height)
 	hbox := me.makeButtonPanel(width, 0)
 	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
-	tileHeight := height - ((2 * buttonHeight) + (3 * gui.Margin))
+	tileHeight := height - ((buttonHeight) + (3 * gui.Margin))
 	tile := fltk.NewTile(0, 0, width, tileHeight)
 	leftWidth := (width / 10) * 4
 	me.makeCriteriaPanel(0, 0, leftWidth, tileHeight)
 	me.makeResultPanel(leftWidth, 0, width-leftWidth, tileHeight)
 	tile.End()
-	hbox = me.makeStatusBar(width, height)
-	vbox.Fixed(hbox, buttonHeight)
 	vbox.End()
 	me.mainVBox = vbox
 }
@@ -300,7 +297,7 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 		height-labelHeight)
 	me.descView.TextFont(fltk.HELVETICA)
 	me.descView.TextSize(me.config.TextSize)
-	me.descView.SetValue(initialDescHtml)
+	me.onInfo("Reading packages…")
 	vbox.End()
 	tile.End()
 }
@@ -308,17 +305,4 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 func (me *App) updatePackagesLabel(count int) {
 	me.packagesLabel.SetLabel(fmt.Sprintf("Packages Found (%s)",
 		gong.Commas(count)))
-}
-
-func (me *App) makeStatusBar(width, y int) *fltk.Flex {
-	buttonHeight := gui.ButtonHeight()
-	hbox := gui.MakeHBox(0, 0, width, buttonHeight)
-	pad := fltk.NewBox(fltk.FLAT_BOX, 0, 0, 1, buttonHeight)
-	hbox.Fixed(pad, 1)
-	me.statusBar = fltk.NewBox(fltk.DOWN_FRAME, 0, y-buttonHeight, width,
-		buttonHeight)
-	me.statusBar.SetAlign(fltk.ALIGN_LEFT | fltk.ALIGN_INSIDE)
-	pad = fltk.NewBox(fltk.FLAT_BOX, width-2, 0, 1, buttonHeight)
-	hbox.Fixed(pad, 1)
-	return hbox
 }
