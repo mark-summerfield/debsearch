@@ -7,6 +7,7 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
+# TODO icons for buttons?
 cmd/gui/DebFind.go
 cmd/gui/app.go
 cmd/gui/actions.go
@@ -32,7 +33,7 @@ st.sh
 
 go.mod
 
-build.sh # TODO DebFind
-deploy.sh # TODO DebFind
+build.sh
+deploy.sh
 
 # vim: syn=yaml
