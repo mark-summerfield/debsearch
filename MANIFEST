@@ -1,4 +1,3 @@
-# TODO pkg.Words: replace all punct with space before Fields
 pkgs.go
 pkg.go
 filepair.go

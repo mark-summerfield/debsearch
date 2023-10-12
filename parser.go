@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 	"sync"
@@ -97,9 +98,14 @@ func readPackages(filename string) (Pkgs, error) {
 	inTags := false
 	inDesc := false
 	pkg := NewPkg()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	reader := bufio.NewReader(file)
+	for {
+		line, err := reader.ReadString('\n')
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return pkgs, err
+		}
 		if line == "" {
 			inTags = false
 			inDesc = false
@@ -108,16 +114,19 @@ func readPackages(filename string) (Pkgs, error) {
 		if strings.HasPrefix(line, packagePrefix) {
 			inTags = false
 			inDesc = false
-			if pkg.Name != "" && pkg.IsValid() {
+			if pkg.IsValid() {
 				pkgs.Pkgs[pkg.Name] = pkg.Copy()
-				pkg.Clear()
 			}
+			pkg.Clear()
 			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
 		} else if strings.HasPrefix(line, " ") {
 			if inTags {
 				addTags(pkg, line, &pkgs)
 			} else if inDesc {
 				pkg.LongDesc += getDesc(line)
+			} else {
+				inTags = false
+				inDesc = false
 			}
 		} else {
 			inTags, inDesc = maybeAddKeyValue(pkg, line, &pkgs)
@@ -156,6 +165,10 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) (bool, bool) {
 			case "Section":
 				pkg.Section = value
 				pkgs.SectionsAndCounts[value]++
+			case "Size":
+				if pkg.Size == 0 {
+					pkg.Size = gong.StrToInt(value, 0)
+				}
 			case "Tag":
 				addTags(pkg, value, pkgs)
 				return true, false
