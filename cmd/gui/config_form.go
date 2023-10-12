@@ -117,7 +117,8 @@ func (me *configForm) makeButtonRow() *fltk.Flex {
 	spacerWidth := (me.width - buttonWidth) / 2
 	leftSpacer := gui.MakeHBox(0, 0, spacerWidth, buttonHeight)
 	leftSpacer.End()
-	button := fltk.NewButton(0, 0, buttonHeight, buttonWidth, "&Close")
+	button := fltk.NewReturnButton(0, 0, buttonHeight, buttonWidth,
+		"&Close")
 	button.SetCallback(me.onClose)
 	righttSpacer := gui.MakeHBox(spacerWidth+buttonWidth, 0, spacerWidth,
 		buttonHeight)

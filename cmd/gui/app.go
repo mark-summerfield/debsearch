@@ -113,38 +113,48 @@ func (me *App) makeWidgets() {
 
 func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	buttonHeight := gui.ButtonHeight()
-	labelWidth := (gui.LabelWidth() * 3) / 2
+	buttonWidth := (gui.LabelWidth() * 5) / 3
 	x := 0
 	hbox := gui.MakeHBox(x, y, width, buttonHeight)
 	hbox.SetBox(fltk.UP_FRAME)
 	pad := fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // left pad
 	hbox.Fixed(pad, 1)
-	findButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
-		"&Find")
+	findButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
+		" &Find")
 	findButton.SetCallback(me.onFind)
-	hbox.Fixed(findButton, labelWidth)
-	x += labelWidth
-	fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth, buttonHeight)
-	x += labelWidth
-	configButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
+	findButton.SetImage(gui.ImageForSvgText(iconSvg, iconSize))
+	findButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	hbox.Fixed(findButton, buttonWidth)
+	x += buttonWidth
+	fltk.NewBox(fltk.FLAT_BOX, x, 0, buttonWidth, buttonHeight)
+	x += buttonWidth
+	configButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
 		"&Options…")
 	configButton.SetCallback(me.onConfigure)
-	hbox.Fixed(configButton, labelWidth)
-	x += labelWidth
-	aboutButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
+	configButton.SetImage(gui.ImageForSvgText(configSvg, iconSize))
+	configButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	hbox.Fixed(configButton, buttonWidth)
+	x += buttonWidth
+	aboutButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
 		"A&bout")
 	aboutButton.SetCallback(me.onAbout)
-	hbox.Fixed(aboutButton, labelWidth)
-	x += labelWidth
-	helpButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
+	aboutButton.SetImage(gui.ImageForSvgText(aboutSvg, iconSize))
+	aboutButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	hbox.Fixed(aboutButton, buttonWidth)
+	x += buttonWidth
+	helpButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
 		"&Help")
 	helpButton.SetCallback(me.onHelp)
-	hbox.Fixed(helpButton, labelWidth)
-	x += labelWidth
-	quitButton := fltk.NewButton(x, 0, labelWidth, buttonHeight,
+	helpButton.SetImage(gui.ImageForSvgText(helpSvg, iconSize))
+	helpButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	hbox.Fixed(helpButton, buttonWidth)
+	x += buttonWidth
+	quitButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
 		"&Quit")
 	quitButton.SetCallback(me.onQuit)
-	hbox.Fixed(quitButton, labelWidth)
+	quitButton.SetImage(gui.ImageForSvgText(quitSvg, iconSize))
+	quitButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	hbox.Fixed(quitButton, buttonWidth)
 	pad = fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // right pad
 	hbox.Fixed(pad, 1)
 	hbox.End()
