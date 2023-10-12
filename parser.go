@@ -206,7 +206,7 @@ func readDescriptions(filename string) map[string]string {
 		}
 	}
 	if name != "" && longDesc != "" {
-		descForPkg[name] = longDesc
+		descForPkg[name] = strings.TrimRight(longDesc, " \t\n")
 	}
 	return descForPkg
 }

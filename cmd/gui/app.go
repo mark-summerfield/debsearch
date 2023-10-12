@@ -101,7 +101,7 @@ func (me *App) makeWidgets() {
 	vbox := gui.MakeVBox(0, 0, width, height)
 	hbox := me.makeButtonPanel(width, 0)
 	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
-	tileHeight := height - ((buttonHeight) + (3 * gui.Margin))
+	tileHeight := height - (2 * buttonHeight)
 	tile := fltk.NewTile(0, 0, width, tileHeight)
 	leftWidth := (width / 10) * 4
 	me.makeCriteriaPanel(0, 0, leftWidth, tileHeight)
@@ -261,6 +261,7 @@ func (me *App) makeWordsPanel(x, y, width, height int) {
 	hbox.Fixed(wordsLabel, labelWidth)
 	me.wordsInput = fltk.NewInput(x, y, width, buttonHeight)
 	hbox.End()
+	vbox.Fixed(hbox, buttonHeight)
 	hbox = gui.MakeHBox(x, y, width, buttonHeight)
 	label := fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth, buttonHeight,
 		"Match:")
@@ -272,8 +273,8 @@ func (me *App) makeWordsPanel(x, y, width, height int) {
 	me.wordsMatchAnyRadioButton = fltk.NewRadioRoundButton(x, 0, labelWidth,
 		buttonHeight, "Any")
 	hbox.End()
+	vbox.Fixed(hbox, buttonHeight)
 	vbox.End()
-	vbox.Fixed(vbox, 2*buttonHeight)
 }
 
 func (me *App) makeResultPanel(x, y, width, height int) {
@@ -286,12 +287,13 @@ func (me *App) makeResultPanel(x, y, width, height int) {
 	vbox.Fixed(me.packagesLabel, labelHeight)
 	me.packagesBrowser = fltk.NewHoldBrowser(0, labelHeight, width,
 		height-labelHeight)
+	me.packagesBrowser.SetCallback(me.onSelectPackage)
 	vbox.End()
 	y += height
 	vbox = gui.MakeVBox(x, y, width, height)
 	divider(vbox)
 	label := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, labelHeight,
-		"Description")
+		"Information")
 	vbox.Fixed(label, labelHeight)
 	me.descView = fltk.NewHelpView(0, labelHeight, width,
 		height-labelHeight)

@@ -41,8 +41,8 @@ func (me *App) onWarn(warn string) { me.onMessage(warn, "maroon") }
 func (me *App) onError(err error) { me.onMessage(err.Error(), "red") }
 
 func (me *App) onMessage(msg, color string) {
-	me.descView.SetValue("<p><font color=" + color + ">" +
-		html.EscapeString(msg) + "</font></p>")
+	me.descView.SetValue("<font color=" + color + ">" +
+		html.EscapeString(msg) + "</font>")
 	me.Redraw()
 }
 
@@ -79,19 +79,52 @@ func (me *App) updateResults(query *ds.Query) {
 	if len(pkgs) == 0 {
 		me.onWarn("No matching packages found.")
 	} else {
+		me.updatePackageBrowserWidths()
 		bg := light1
 		for _, pkg := range pkgs {
-			me.packagesBrowser.Add(fmt.Sprintf("@B%d@.%s • %s", bg,
-				pkg.Name, pkg.ShortDesc))
+			me.packagesBrowser.Add(fmt.Sprintf("@B%d@.%s\t@B%d@.%s", bg,
+				pkg.Name, bg, pkg.ShortDesc))
 			if bg == light1 {
 				bg = light2
 			} else {
 				bg = light1
 			}
 		}
-		//TODO list of packages (name, size, short desc)
-		//TODO select first package
-		//TODO the currently selected package's name, version, size, url, short & long desc
+		me.packagesBrowser.SetSelected(1, true)
+		me.packagesBrowser.TakeFocus()
+		me.onSelectPackage()
+	}
+}
+
+func (me *App) updatePackageBrowserWidths() {
+	width := me.packagesBrowser.W()
+	nWidth, _ := fltk.MeasureText("n", false)
+	left := min(nWidth*20, width/2)
+	me.packagesBrowser.SetColumnWidths(left, width-left)
+}
+
+func (me *App) onSelectPackage() {
+	if i := me.packagesBrowser.Value(); i > 0 {
+		if text := me.packagesBrowser.Text(i); text != "" {
+			if j := strings.IndexByte(text, '\t'); j > -1 {
+				text = text[:j]
+				if j := strings.Index(text, "@."); j > -1 {
+					if text = text[j+2:]; text != "" {
+						me.showDescription(text)
+					}
+				}
+			}
+		}
+	}
+}
+
+func (me *App) showDescription(name string) {
+	if pkg, ok := me.pkgs.Pkgs[name]; ok {
+		me.descView.SetValue(fmt.Sprintf(descTemplate,
+			pkg.Url, html.EscapeString(pkg.Name),
+			html.EscapeString(pkg.Version), ds.HumanSize(pkg.Size),
+			html.EscapeString(pkg.ShortDesc),
+			html.EscapeString(pkg.LongDesc)))
 	}
 }
 

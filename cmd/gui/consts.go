@@ -25,4 +25,14 @@ const (
 	todoSuffix    = "/TODO"
 	light1        = 255
 	light2        = 52
+
+	descTemplate = `<html><body>
+<a href="%s"><font color=navy>%s</font></a>&nbsp;&nbsp;v%s&nbsp;&nbsp;%s
+<p><font color=green>%s</font></p>
+<p>
+<pre><font face=helvetica>
+%s
+</font></pre>
+</p>
+</body></html>`
 )

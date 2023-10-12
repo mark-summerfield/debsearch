@@ -7,11 +7,9 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-# TODO if found > 0, select first pkg
-# TODO set callback to populate descView whenever a found pkg is selected
 cmd/gui/DebFind.go
 cmd/gui/app.go
-cmd/gui/actions.go # TODO onFind
+cmd/gui/actions.go
 cmd/gui/config_form.go
 cmd/gui/config.go
 cmd/gui/util.go
