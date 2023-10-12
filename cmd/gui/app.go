@@ -113,7 +113,7 @@ func (me *App) makeWidgets() {
 
 func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	buttonHeight := gui.ButtonHeight()
-	buttonWidth := (gui.LabelWidth() * 5) / 3
+	buttonWidth := ((gui.LabelWidth() * 5) / 3) + (2 * gui.Pad)
 	x := 0
 	hbox := gui.MakeHBox(x, y, width, buttonHeight)
 	hbox.SetBox(fltk.UP_FRAME)
@@ -129,28 +129,28 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	fltk.NewBox(fltk.FLAT_BOX, x, 0, buttonWidth, buttonHeight)
 	x += buttonWidth
 	configButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		"&Options…")
+		" &Options…")
 	configButton.SetCallback(me.onConfigure)
 	configButton.SetImage(gui.ImageForSvgText(configSvg, iconSize))
 	configButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
 	hbox.Fixed(configButton, buttonWidth)
 	x += buttonWidth
 	aboutButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		"A&bout")
+		" A&bout")
 	aboutButton.SetCallback(me.onAbout)
 	aboutButton.SetImage(gui.ImageForSvgText(aboutSvg, iconSize))
 	aboutButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
 	hbox.Fixed(aboutButton, buttonWidth)
 	x += buttonWidth
 	helpButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		"&Help")
+		" &Help")
 	helpButton.SetCallback(me.onHelp)
 	helpButton.SetImage(gui.ImageForSvgText(helpSvg, iconSize))
 	helpButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
 	hbox.Fixed(helpButton, buttonWidth)
 	x += buttonWidth
 	quitButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		"&Quit")
+		" &Quit")
 	quitButton.SetCallback(me.onQuit)
 	quitButton.SetImage(gui.ImageForSvgText(quitSvg, iconSize))
 	quitButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
