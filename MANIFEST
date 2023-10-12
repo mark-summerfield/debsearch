@@ -8,6 +8,7 @@ consts.go
 cmd/cli/debsearch.go
 
 # TODO icons for buttons?
+# TODO config load/save tags & words All/Any settings?
 cmd/gui/DebFind.go
 cmd/gui/app.go
 cmd/gui/actions.go
