@@ -10,9 +10,9 @@ import (
 	"github.com/mark-summerfield/gong"
 )
 
-func stdFilePairs(arch string, withDescriptions bool) []FilePair {
+func stdFilePairs(arc string, withDescriptions bool) []FilePair {
 	pairs := []FilePair{}
-	glob := filepath.Join(listsPath, "*"+arch+"_Packages")
+	glob := filepath.Join(listsPath, "*"+arc+"_Packages")
 	if matches, err := filepath.Glob(glob); err == nil {
 		for _, pkgFile := range matches {
 			if !strings.Contains(pkgFile, "i386") {

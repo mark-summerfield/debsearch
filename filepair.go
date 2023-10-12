@@ -12,10 +12,10 @@ func NewFilePair(pkg, i18n string) FilePair {
 	return FilePair{pkg, i18n}
 }
 
-func StdFilePairs(arch string) []FilePair {
-	return stdFilePairs(arch, false)
+func StdFilePairs(arc string) []FilePair {
+	return stdFilePairs(arc, false)
 }
 
-func StdFilePairsWithDescriptions(arch string) []FilePair {
-	return stdFilePairs(arch, true)
+func StdFilePairsWithDescriptions(arc string) []FilePair {
+	return stdFilePairs(arc, true)
 }

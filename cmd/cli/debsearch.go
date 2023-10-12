@@ -17,14 +17,14 @@ func main() {
 	config := getConfig()
 	var pairs []ds.FilePair
 	if config.query.Words.IsEmpty() {
-		pairs = ds.StdFilePairs(config.arch)
+		pairs = ds.StdFilePairs(config.arc)
 	} else {
-		pairs = ds.StdFilePairsWithDescriptions(config.arch)
+		pairs = ds.StdFilePairsWithDescriptions(config.arc)
 	}
 	t := time.Now()
 	pkgs, err := ds.NewPkgs(pairs...)
 	gong.CheckError("failed to read package files", err)
-	maybePrintArchs(config)
+	maybePrintArcs(config)
 	maybePrintSections(config, pkgs.SectionsAndCounts)
 	maybePrintTags(config, pkgs.TagsAndCounts)
 	elapsed := time.Since(t)
@@ -36,17 +36,17 @@ func main() {
 	}
 }
 
-func maybePrintArchs(config *Config) {
-	if config.listArchs {
-		archs := strings.Fields(ds.Archs)
+func maybePrintArcs(config *Config) {
+	if config.listArcs {
+		arcs := strings.Fields(ds.Arcs)
 		if config.verbose {
-			fmt.Printf("Archs (%d):\n", len(archs))
+			fmt.Printf("Arcs (%d):\n", len(arcs))
 		}
-		for _, arch := range archs {
-			if arch == ds.DefaultArch {
-				arch += " [default]"
+		for _, arc := range arcs {
+			if arc == ds.DefaultArc {
+				arc += " [default]"
 			}
-			fmt.Println(arch)
+			fmt.Println(arc)
 		}
 	}
 }
@@ -108,11 +108,11 @@ func getConfig() *Config {
 	parser.LongDesc = "A tool for searching Debian packages."
 	debugOpt := parser.Flag("debug", "")
 	debugOpt.Hide()
-	archOpt := parser.Choice("arch",
-		"System arch(itecture) [default: "+ds.DefaultArch+"].",
-		strings.Fields(ds.Archs), ds.DefaultArch)
-	listArchsOpt := parser.Flag("list-archs", "Print arch(itecture) names.")
-	listArchsOpt.SetShortName(clip.NoShortName)
+	arcOpt := parser.Choice("arc",
+		"System arc(hitecture) [default: "+ds.DefaultArc+"].",
+		strings.Fields(ds.Arcs), ds.DefaultArc)
+	listArcsOpt := parser.Flag("list-arcs", "Print arc(hitecture) names.")
+	listArcsOpt.SetShortName(clip.NoShortName)
 	sectionsOpt := parser.Str("sections", "Match any of the "+
 		"comma-separated list of sections [default: match any section].",
 		"")
@@ -140,8 +140,8 @@ func getConfig() *Config {
 		parser.OnError(err) // doesn't return
 		return nil          // never reached
 	}
-	config := Config{arch: archOpt.Value(), query: ds.NewQuery(),
-		listArchs: listArchsOpt.Value(), listTags: listTagsOpt.Value(),
+	config := Config{arc: arcOpt.Value(), query: ds.NewQuery(),
+		listArcs: listArcsOpt.Value(), listTags: listTagsOpt.Value(),
 		listSections: listSectionsOpt.Value(), verbose: verboseOpt.Value()}
 	if sectionsOpt.Given() {
 		config.query.Sections.Add(
@@ -167,16 +167,16 @@ func getConfig() *Config {
 }
 
 type Config struct {
-	arch         string
+	arc          string
 	query        *ds.Query
-	listArchs    bool
+	listArcs     bool
 	listTags     bool
 	listSections bool
 	verbose      bool
 }
 
 func (me *Config) IsValid() bool {
-	return me.listArchs || me.listTags || me.listSections ||
+	return me.listArcs || me.listTags || me.listSections ||
 		!me.query.Sections.IsEmpty() || !me.query.Tags.IsEmpty() ||
 		!me.query.Words.IsEmpty()
 }
@@ -187,7 +187,7 @@ func (me *Config) IsSearch() bool {
 }
 
 func (me *Config) String() string {
-	return fmt.Sprintf("query=%s listArchs=%t listTags=%t "+
+	return fmt.Sprintf("query=%s listArcs=%t listTags=%t "+
 		"listSections=%t verbose=%t",
-		me.query, me.listArchs, me.listTags, me.listSections, me.verbose)
+		me.query, me.listArcs, me.listTags, me.listSections, me.verbose)
 }

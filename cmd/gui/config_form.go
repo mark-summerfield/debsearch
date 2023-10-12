@@ -17,7 +17,7 @@ type configForm struct {
 	height     int
 	labelWidth int
 	app        *App
-	archChoice *fltk.Choice
+	arcChoice  *fltk.Choice
 }
 
 func newConfigForm(app *App) configForm {
@@ -37,7 +37,7 @@ func (me *configForm) makeWidgets() {
 	vbox.Fixed(hbox, rowHeight)
 	hbox = me.makeTextSizeRow()
 	vbox.Fixed(hbox, rowHeight)
-	hbox = me.makeArchRow()
+	hbox = me.makeArcRow()
 	vbox.Fixed(hbox, rowHeight)
 	hbox = me.makeButtonRow()
 	vbox.Fixed(hbox, rowHeight)
@@ -90,22 +90,22 @@ func (me *configForm) makeTextSizeRow() *fltk.Flex {
 	return hbox
 }
 
-func (me *configForm) makeArchRow() *fltk.Flex {
+func (me *configForm) makeArcRow() *fltk.Flex {
 	buttonHeight := gui.ButtonHeight()
 	hbox := gui.MakeHBox(0, 0, me.width, buttonHeight)
-	archLabel := gui.MakeAccelLabel(me.labelWidth, buttonHeight,
+	arcLabel := gui.MakeAccelLabel(me.labelWidth, buttonHeight,
 		"&Architecture")
-	me.archChoice = fltk.NewChoice(0, 0, gui.LabelWidth(), buttonHeight)
+	me.arcChoice = fltk.NewChoice(0, 0, gui.LabelWidth(), buttonHeight)
 	current := 0
-	for i, name := range strings.Fields(ds.Archs) {
-		me.archChoice.Add(name, nil)
-		if name == me.app.config.Arch {
+	for i, name := range strings.Fields(ds.Arcs) {
+		me.arcChoice.Add(name, nil)
+		if name == me.app.config.Arc {
 			current = i
 		}
 	}
-	me.archChoice.SetValue(current)
-	archLabel.SetCallback(func() { me.archChoice.TakeFocus() })
-	hbox.Fixed(archLabel, me.labelWidth)
+	me.arcChoice.SetValue(current)
+	arcLabel.SetCallback(func() { me.arcChoice.TakeFocus() })
+	hbox.Fixed(arcLabel, me.labelWidth)
 	hbox.End()
 	return hbox
 }
@@ -127,10 +127,10 @@ func (me *configForm) makeButtonRow() *fltk.Flex {
 }
 
 func (me *configForm) onClose() {
-	oldArch := me.app.config.Arch
-	newArch := me.archChoice.SelectedText()
-	if oldArch != newArch {
-		me.app.config.Arch = newArch
+	oldArc := me.app.config.Arc
+	newArc := me.arcChoice.SelectedText()
+	if oldArc != newArc {
+		me.app.config.Arc = newArc
 		me.app.loadPackages()
 	}
 	me.app.descView.TextSize(me.app.config.TextSize)
