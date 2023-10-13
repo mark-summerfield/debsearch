@@ -1,12 +1,13 @@
 # debsearch
 
-An tools and package for finding Debian packages.
+Tools and a library for finding Debian packages.
 
 There is a debsearch Go package, plus `debsearch` a command line tool, and
 `DebFind` a GUI application.
 
 Both `debsearch` and `DebFind` are run as an ordinary user and are very
-fast.
+fast. They should prove useful to anyone who uses Debian or a Debian-derived
+Linux distribution such as Ubuntu.
 
 ![DebFind Screenshot](screenshot.png)
 
