@@ -22,6 +22,7 @@ const (
 	listsPath        = "/var/lib/apt/lists/"
 	packagePrefix    = "Package:"
 	packagePrefixLen = len(packagePrefix)
+	asciiWs          = " \f\n\r\t\v"
 )
 
 var (

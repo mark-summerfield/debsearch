@@ -46,6 +46,11 @@ func (me *App) onMessage(msg, color string) {
 	me.Redraw()
 }
 
+func (me *App) onHtmlMessage(htmlMsg string) {
+	me.descView.SetValue(htmlMsg)
+	me.Redraw()
+}
+
 func (me *App) onFind() {
 	me.packagesBrowser.Clear()
 	me.onInfo("Searching…")

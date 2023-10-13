@@ -50,3 +50,13 @@ func divider(parent *fltk.Flex) {
 	pad := fltk.NewBox(fltk.ENGRAVED_BOX, 0, 0, 100, thickness)
 	parent.Fixed(pad, thickness)
 }
+
+func makeButton(x int, text, icon string, callback func()) *fltk.Button {
+	buttonHeight := gui.ButtonHeight()
+	buttonWidth := ((gui.LabelWidth() * 5) / 3) + (2 * gui.Pad)
+	button := fltk.NewButton(x, 0, buttonWidth, buttonHeight, text)
+	button.SetImage(gui.ImageForSvgText(icon, iconSize))
+	button.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	button.SetCallback(callback)
+	return button
+}

@@ -39,6 +39,12 @@ const (
 	light2        = 52
 	iconSize      = 22
 
+	loadTemplate = `<html><body>
+<font color=navy>Read %s packages.</font>
+<p><font color=green>Click <b><u>F</u>ind</b> to find matching
+packages…</font></p>
+</body></html>`
+
 	descTemplate = `<html><body>
 <a href="%s"><font color=navy>%s</font></a>&nbsp;&nbsp;v%s&nbsp;&nbsp;%s
 <p><font color=green>%s</font></p>

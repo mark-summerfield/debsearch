@@ -95,8 +95,7 @@ func readPackages(filename string) (Pkgs, error) {
 		return pkgs, fmt.Errorf("%w: %s", Err101, err)
 	}
 	defer file.Close()
-	inTags := false
-	inDesc := false
+	state := &parseState{}
 	pkg := NewPkg()
 	reader := bufio.NewReader(file)
 	for {
@@ -107,29 +106,26 @@ func readPackages(filename string) (Pkgs, error) {
 			return pkgs, err
 		}
 		if line == "" {
-			inTags = false
-			inDesc = false
+			state.Clear()
 			continue
 		}
 		if strings.HasPrefix(line, packagePrefix) {
-			inTags = false
-			inDesc = false
+			state.Clear()
 			if pkg.IsValid() {
 				pkgs.Pkgs[pkg.Name] = pkg.Copy()
 			}
 			pkg.Clear()
 			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
 		} else if strings.HasPrefix(line, " ") {
-			if inTags {
+			if state.inTags {
 				addTags(pkg, line, &pkgs)
-			} else if inDesc {
+			} else if state.inDesc {
 				pkg.LongDesc += getDesc(line)
 			} else {
-				inTags = false
-				inDesc = false
+				state.Clear()
 			}
 		} else {
-			inTags, inDesc = maybeAddKeyValue(pkg, line, &pkgs)
+			state.Update(maybeAddKeyValue(pkg, line, &pkgs))
 		}
 	}
 	if pkg.IsValid() {
@@ -162,13 +158,13 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) (bool, bool) {
 				pkg.Url = value
 			case "Installed-Size":
 				pkg.Size = gong.StrToInt(value, 0)
-			case "Section":
-				pkg.Section = value
-				pkgs.SectionsAndCounts[value]++
-			case "Size":
+			case "Size": // download size
 				if pkg.Size == 0 {
 					pkg.Size = gong.StrToInt(value, 0)
 				}
+			case "Section":
+				pkg.Section = value
+				pkgs.SectionsAndCounts[value]++
 			case "Tag":
 				addTags(pkg, value, pkgs)
 				return true, false
@@ -189,9 +185,12 @@ func readDescriptions(filename string) map[string]string {
 	defer file.Close()
 	name := ""
 	longDesc := ""
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	reader := bufio.NewReader(file)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			break
+		}
 		if line == "" {
 			continue
 		}
@@ -206,15 +205,30 @@ func readDescriptions(filename string) map[string]string {
 		}
 	}
 	if name != "" && longDesc != "" {
-		descForPkg[name] = strings.TrimRight(longDesc, " \t\n")
+		descForPkg[name] = strings.TrimRight(longDesc, asciiWs)
 	}
 	return descForPkg
 }
 
 func getDesc(line string) string {
-	line = strings.TrimRight(line[1:], " \t\n")
+	line = strings.TrimRight(line[1:], asciiWs)
 	if line == "." {
 		line = ""
 	}
 	return line + "\n"
+}
+
+type parseState struct {
+	inTags bool
+	inDesc bool
+}
+
+func (me *parseState) Clear() {
+	me.inTags = false
+	me.inDesc = false
+}
+
+func (me *parseState) Update(inTags, inDesc bool) {
+	me.inTags = inTags
+	me.inDesc = inDesc
 }

@@ -43,7 +43,7 @@ func maybePrintArcs(config *Config) {
 			fmt.Printf("Arcs (%d):\n", len(arcs))
 		}
 		for _, arc := range arcs {
-			if arc == ds.DefaultArc {
+			if config.verbose && arc == ds.DefaultArc {
 				arc += " [default]"
 			}
 			fmt.Println(arc)

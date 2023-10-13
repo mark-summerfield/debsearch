@@ -48,7 +48,7 @@ func (me *App) loadPackages() {
 		me.onError(err)
 	} else {
 		me.pkgs = &pkgs
-		me.onInfo(fmt.Sprintf("Read %s packages.\n",
+		me.onHtmlMessage(fmt.Sprintf(loadTemplate,
 			gong.Commas(len(pkgs.Pkgs))))
 		me.populateSections()
 		me.populateTags()
@@ -66,8 +66,7 @@ func (me *App) populateSections() {
 			count++
 		}
 	}
-	me.sectionsLabel.SetLabel(fmt.Sprintf("&Sections (0/%s)",
-		gong.Commas(count)))
+	me.updateSectionsLabel(0)
 }
 
 func (me *App) populateTags() {
@@ -80,7 +79,7 @@ func (me *App) populateTags() {
 			count++
 		}
 	}
-	me.tagsLabel.SetLabel(fmt.Sprintf("&Tags (0/%s)", gong.Commas(count)))
+	me.updateTagsLabel(0)
 }
 
 func (me *App) makeMainWindow() {
@@ -101,7 +100,7 @@ func (me *App) makeWidgets() {
 	vbox := gui.MakeVBox(0, 0, width, height)
 	hbox := me.makeButtonPanel(width, 0)
 	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
-	tileHeight := height - (2 * buttonHeight)
+	tileHeight := height - ((buttonHeight * 3) / 2)
 	tile := fltk.NewTile(0, 0, width, tileHeight)
 	nWidth, _ := fltk.MeasureText("n", false)
 	leftWidth := min(nWidth*36, width/2)
@@ -120,41 +119,21 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	hbox.SetBox(fltk.UP_FRAME)
 	pad := fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // left pad
 	hbox.Fixed(pad, 1)
-	findButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		" &Find")
-	findButton.SetCallback(me.onFind)
-	findButton.SetImage(gui.ImageForSvgText(iconSvg, iconSize))
-	findButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	findButton := makeButton(x, " &Find", iconSvg, me.onFind)
 	hbox.Fixed(findButton, buttonWidth)
 	x += buttonWidth
 	fltk.NewBox(fltk.FLAT_BOX, x, 0, buttonWidth, buttonHeight)
 	x += buttonWidth
-	configButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		" &Options…")
-	configButton.SetCallback(me.onConfigure)
-	configButton.SetImage(gui.ImageForSvgText(configSvg, iconSize))
-	configButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	configButton := makeButton(x, " &Options…", configSvg, me.onConfigure)
 	hbox.Fixed(configButton, buttonWidth)
 	x += buttonWidth
-	aboutButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		" A&bout")
-	aboutButton.SetCallback(me.onAbout)
-	aboutButton.SetImage(gui.ImageForSvgText(aboutSvg, iconSize))
-	aboutButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	aboutButton := makeButton(x, " A&bout", aboutSvg, me.onAbout)
 	hbox.Fixed(aboutButton, buttonWidth)
 	x += buttonWidth
-	helpButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		" &Help")
-	helpButton.SetCallback(me.onHelp)
-	helpButton.SetImage(gui.ImageForSvgText(helpSvg, iconSize))
-	helpButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	helpButton := makeButton(x, " &Help", helpSvg, me.onHelp)
 	hbox.Fixed(helpButton, buttonWidth)
 	x += buttonWidth
-	quitButton := fltk.NewButton(x, 0, buttonWidth, buttonHeight,
-		" &Quit")
-	quitButton.SetCallback(me.onQuit)
-	quitButton.SetImage(gui.ImageForSvgText(quitSvg, iconSize))
-	quitButton.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
+	quitButton := makeButton(x, " &Quit", quitSvg, me.onQuit)
 	hbox.Fixed(quitButton, buttonWidth)
 	pad = fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // right pad
 	hbox.Fixed(pad, 1)
