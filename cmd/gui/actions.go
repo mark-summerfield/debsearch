@@ -154,6 +154,8 @@ func (me *App) onQuit() {
 	me.config.Height = me.Window.H()
 	me.config.Scale = fltk.ScreenScale(0)
 	me.config.IncludeNonFreeSections = me.incNonFreeCheckbox.Value()
+	me.config.AllTags = me.tagsMatchAllRadioButton.Value()
+	me.config.AllWords = me.wordsMatchAllRadioButton.Value()
 	me.config.save()
 	me.Window.Destroy()
 }

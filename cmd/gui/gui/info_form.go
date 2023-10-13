@@ -41,5 +41,20 @@ func MakeInfoForm(title, appName, descHtml, iconSvg string, width, height,
 	vbox.Fixed(hbox, buttonHeight)
 	vbox.End()
 	window.End()
+	window.SetEventHandler(func(event fltk.Event) bool {
+		return onEvent(event, window)
+	})
 	return window
+}
+
+func onEvent(event fltk.Event, window *fltk.Window) bool {
+	key := fltk.EventKey()
+	switch fltk.EventType() {
+	case fltk.SHORTCUT:
+		if key == fltk.ESCAPE {
+			window.Destroy()
+			return true
+		}
+	}
+	return false
 }
