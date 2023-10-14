@@ -240,7 +240,7 @@ func (me *App) makeTagsPanel(x, y, width, height int) {
 }
 
 func (me *App) updateTagsLabel(count int) {
-	me.tagsLabel.SetLabel(fmt.Sprintf("&Tagss (%s/%s)",
+	me.tagsLabel.SetLabel(fmt.Sprintf("&Tags (%s/%s)",
 		gong.Commas(count), gong.Commas(me.tagsBrowser.Size())))
 }
 
