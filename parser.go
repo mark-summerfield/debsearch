@@ -16,23 +16,23 @@ import (
 )
 
 type parser struct {
-	pkgs             Pkgs
-	pkgsMutex        sync.Mutex
+	model            Model
+	modelMutex       sync.Mutex
 	err              error
 	errMutex         sync.Mutex
 	descForPkgs      map[string]string
 	descForPkgsMutex sync.Mutex
 }
 
-func parse(filepairs ...FilePair) (Pkgs, error) {
+func parse(filepairs ...FilePair) (Model, error) {
 	if len(filepairs) == 0 {
-		return Pkgs{}, Err102
+		return Model{}, Err102
 	}
-	parser := &parser{pkgs: newPkgs(), descForPkgs: map[string]string{}}
+	parser := &parser{model: newModel(), descForPkgs: map[string]string{}}
 	return parser.parse(filepairs...)
 }
 
-func (me *parser) parse(filepairs ...FilePair) (Pkgs, error) {
+func (me *parser) parse(filepairs ...FilePair) (Model, error) {
 	var wg sync.WaitGroup
 	for i, pair := range filepairs {
 		wg.Add(1)
@@ -50,30 +50,30 @@ func (me *parser) parse(filepairs ...FilePair) (Pkgs, error) {
 	}
 	wg.Wait()
 	for name, longDesc := range me.descForPkgs { // merge
-		if pkg, ok := me.pkgs.Pkgs[name]; ok {
+		if pkg, ok := me.model.Packages[name]; ok {
 			pkg.LongDesc = longDesc
 		}
 	}
-	return me.pkgs, me.err
+	return me.model, me.err
 }
 
 func (me *parser) readPackages(filename string) {
-	pkgs, err := readPackages(filename)
+	model, err := readPackages(filename)
 	if err != nil {
 		me.errMutex.Lock()
 		defer me.errMutex.Unlock()
 		me.err = errors.Join(err)
 	} else {
-		me.pkgsMutex.Lock()
-		defer me.pkgsMutex.Unlock()
-		for name, pkg := range pkgs.Pkgs {
-			me.pkgs.Pkgs[name] = pkg
+		me.modelMutex.Lock()
+		defer me.modelMutex.Unlock()
+		for name, pkg := range model.Packages {
+			me.model.Packages[name] = pkg
 		}
-		for section, count := range pkgs.SectionsAndCounts {
-			me.pkgs.SectionsAndCounts[section] += count
+		for section, count := range model.SectionsAndCounts {
+			me.model.SectionsAndCounts[section] += count
 		}
-		for tag, count := range pkgs.TagsAndCounts {
-			me.pkgs.TagsAndCounts[tag] += count
+		for tag, count := range model.TagsAndCounts {
+			me.model.TagsAndCounts[tag] += count
 		}
 	}
 }
@@ -88,11 +88,11 @@ func (me *parser) readDescriptions(filename string) {
 	}
 }
 
-func readPackages(filename string) (Pkgs, error) {
-	pkgs := newPkgs()
+func readPackages(filename string) (Model, error) {
+	model := newModel()
 	file, err := os.Open(filename)
 	if err != nil {
-		return pkgs, fmt.Errorf("%w: %s", Err101, err)
+		return model, fmt.Errorf("%w: %s", Err101, err)
 	}
 	defer file.Close()
 	state := &parseState{}
@@ -103,7 +103,7 @@ func readPackages(filename string) (Pkgs, error) {
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return pkgs, err
+			return model, err
 		}
 		if line == "" {
 			state.Clear()
@@ -112,40 +112,40 @@ func readPackages(filename string) (Pkgs, error) {
 		if strings.HasPrefix(line, packagePrefix) {
 			state.Clear()
 			if pkg.IsValid() {
-				pkgs.Pkgs[pkg.Name] = pkg.Copy()
+				model.Packages[pkg.Name] = pkg.Copy()
 			}
 			pkg.Clear()
 			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
 		} else if strings.HasPrefix(line, " ") {
 			if state.inTags {
-				addTags(pkg, line, &pkgs)
+				addTags(pkg, line, &model)
 			} else if state.inDesc {
 				pkg.LongDesc += getDesc(line)
 			} else {
 				state.Clear()
 			}
 		} else {
-			state.Update(maybeAddKeyValue(pkg, line, &pkgs))
+			state.Update(maybeAddKeyValue(pkg, line, &model))
 		}
 	}
 	if pkg.IsValid() {
-		pkgs.Pkgs[pkg.Name] = pkg.Copy()
+		model.Packages[pkg.Name] = pkg.Copy()
 	}
-	return pkgs, nil
+	return model, nil
 }
 
-func addTags(pkg *pkg, line string, pkgs *Pkgs) {
+func addTags(pkg *pkg, line string, model *Model) {
 	for _, item := range strings.Split(line, ",") {
 		item = strings.TrimSpace(item)
 		if item != "" {
 			item = strings.ReplaceAll(item, "::", "/")
 			pkg.Tags.Add(item)
-			pkgs.TagsAndCounts[item]++
+			model.TagsAndCounts[item]++
 		}
 	}
 }
 
-func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) (bool, bool) {
+func maybeAddKeyValue(pkg *pkg, line string, model *Model) (bool, bool) {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
@@ -164,9 +164,9 @@ func maybeAddKeyValue(pkg *pkg, line string, pkgs *Pkgs) (bool, bool) {
 				}
 			case "Section":
 				pkg.Section = value
-				pkgs.SectionsAndCounts[value]++
+				model.SectionsAndCounts[value]++
 			case "Tag":
-				addTags(pkg, value, pkgs)
+				addTags(pkg, value, model)
 				return true, false
 			case "Version":
 				pkg.Version = value

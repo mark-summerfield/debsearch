@@ -79,7 +79,7 @@ func (me *App) makeQuery() *ds.Query {
 }
 
 func (me *App) updateResults(query *ds.Query) {
-	pkgs := query.SelectFrom(me.pkgs)
+	pkgs := query.SelectFrom(me.model)
 	me.updatePackagesLabel(len(pkgs))
 	if len(pkgs) == 0 {
 		me.onWarn("No matching packages found.")
@@ -124,7 +124,7 @@ func (me *App) onSelectPackage() {
 }
 
 func (me *App) showDescription(name string) {
-	if pkg, ok := me.pkgs.Pkgs[name]; ok {
+	if pkg, ok := me.model.Packages[name]; ok {
 		me.descView.SetValue(fmt.Sprintf(descTemplate,
 			pkg.Url, html.EscapeString(pkg.Name),
 			html.EscapeString(pkg.Version), ds.HumanSize(pkg.Size),

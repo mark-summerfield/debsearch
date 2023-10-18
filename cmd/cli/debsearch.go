@@ -22,16 +22,17 @@ func main() {
 		pairs = ds.StdFilePairsWithDescriptions(config.arc)
 	}
 	t := time.Now()
-	pkgs, err := ds.NewPkgs(pairs...)
+	model, err := ds.NewModel(pairs...)
 	gong.CheckError("failed to read package files", err)
 	maybePrintArcs(config)
-	maybePrintSections(config, pkgs.SectionsAndCounts)
-	maybePrintTags(config, pkgs.TagsAndCounts)
+	maybePrintSections(config, model.SectionsAndCounts)
+	maybePrintTags(config, model.TagsAndCounts)
 	elapsed := time.Since(t)
 	if config.IsSearch() {
-		search(config, pkgs, elapsed)
+		search(config, model, elapsed)
 	} else if config.verbose {
-		fmt.Printf("searched %s pkgs in %s.\n", gong.Commas(len(pkgs.Pkgs)),
+		fmt.Printf("searched %s pkgs in %s.\n",
+			gong.Commas(len(model.Packages)),
 			elapsed)
 	}
 }
@@ -85,19 +86,19 @@ func maybePrintTags(config *Config, tagsAndCounts map[string]int) {
 	}
 }
 
-func search(config *Config, pkgs ds.Pkgs, elapsed time.Duration) {
-	matches := config.query.SelectFrom(&pkgs)
+func search(config *Config, model ds.Model, elapsed time.Duration) {
+	matches := config.query.SelectFrom(&model)
 	if len(matches) == 0 {
 		fmt.Printf(
 			"searched %s pkgs in %s; no matching packages found.\n",
-			gong.Commas(len(pkgs.Pkgs)), elapsed)
+			gong.Commas(len(model.Packages)), elapsed)
 	} else {
 		for _, pkg := range matches {
 			fmt.Printf("* %s\n", pkg)
 		}
 		if config.verbose {
 			fmt.Printf("found %s/%s pkgs in %s\n",
-				gong.Commas(len(matches)), gong.Commas(len(pkgs.Pkgs)),
+				gong.Commas(len(matches)), gong.Commas(len(model.Packages)),
 				elapsed)
 		}
 	}

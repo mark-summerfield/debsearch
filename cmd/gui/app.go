@@ -16,7 +16,7 @@ import (
 type App struct {
 	*fltk.Window
 	config                   *Config
-	pkgs                     *ds.Pkgs
+	model                    *ds.Model
 	mainVBox                 *fltk.Flex
 	sectionsLabel            *fltk.Button
 	sectionsBrowser          *fltk.MultiBrowser
@@ -44,12 +44,12 @@ func newApp(config *Config) *App {
 
 func (me *App) loadPackages() {
 	pairs := ds.StdFilePairsWithDescriptions(me.config.Arc)
-	if pkgs, err := ds.NewPkgs(pairs...); err != nil {
+	if model, err := ds.NewModel(pairs...); err != nil {
 		me.onError(err)
 	} else {
-		me.pkgs = &pkgs
+		me.model = &model
 		me.onHtmlMessage(fmt.Sprintf(loadTemplate,
-			gong.Commas(len(pkgs.Pkgs))))
+			gong.Commas(len(model.Packages))))
 		me.populateSections()
 		me.populateTags()
 	}
@@ -58,11 +58,11 @@ func (me *App) loadPackages() {
 func (me *App) populateSections() {
 	me.sectionsBrowser.Clear()
 	count := 0
-	for _, section := range gong.SortedMapKeys(me.pkgs.SectionsAndCounts) {
+	for _, section := range gong.SortedMapKeys(me.model.SectionsAndCounts) {
 		if !strings.HasPrefix(section, nonfreePrefix) &&
 			!strings.HasSuffix(section, todoSuffix) {
 			me.sectionsBrowser.Add(fmt.Sprintf("%s (%s)", section,
-				gong.Commas(me.pkgs.SectionsAndCounts[section])))
+				gong.Commas(me.model.SectionsAndCounts[section])))
 			count++
 		}
 	}
@@ -72,10 +72,10 @@ func (me *App) populateSections() {
 func (me *App) populateTags() {
 	me.tagsBrowser.Clear()
 	count := 0
-	for _, tag := range gong.SortedMapKeys(me.pkgs.TagsAndCounts) {
+	for _, tag := range gong.SortedMapKeys(me.model.TagsAndCounts) {
 		if !strings.HasSuffix(tag, todoSuffix) {
 			me.tagsBrowser.Add(fmt.Sprintf("%s (%s)", tag,
-				gong.Commas(me.pkgs.TagsAndCounts[tag])))
+				gong.Commas(me.model.TagsAndCounts[tag])))
 			count++
 		}
 	}

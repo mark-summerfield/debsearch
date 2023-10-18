@@ -25,9 +25,9 @@ func NewQuery() *Query {
 		Words: gset.New[string]()}
 }
 
-func (me *Query) SelectFrom(pkgs *Pkgs) []*pkg {
+func (me *Query) SelectFrom(model *Model) []*pkg {
 	matched := gset.New[*pkg]()
-	for _, pkg := range pkgs.Pkgs {
+	for _, pkg := range model.Packages {
 		if me.Match(pkg) {
 			matched.Add(pkg)
 		}

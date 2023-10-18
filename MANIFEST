@@ -1,4 +1,4 @@
-pkgs.go
+model.go
 pkg.go
 filepair.go
 query.go

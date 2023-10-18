@@ -3,18 +3,18 @@
 
 package debsearch
 
-type Pkgs struct {
-	Pkgs              map[string]*pkg
+type Model struct {
+	Packages          map[string]*pkg
 	SectionsAndCounts map[string]int
 	TagsAndCounts     map[string]int
 }
 
-func newPkgs() Pkgs {
-	return Pkgs{Pkgs: map[string]*pkg{},
+func newModel() Model {
+	return Model{Packages: map[string]*pkg{},
 		SectionsAndCounts: map[string]int{},
 		TagsAndCounts:     map[string]int{}}
 }
 
-func NewPkgs(filepairs ...FilePair) (Pkgs, error) {
+func NewModel(filepairs ...FilePair) (Model, error) {
 	return parse(filepairs...)
 }
