@@ -8,14 +8,6 @@ consts.go
 cmd/cli/debsearch.go
 
 # TODO change Sections & Tags from Browsers to Trees
-cmd/guix/DebFind.go
-cmd/guix/app.go
-cmd/guix/actions.go
-cmd/guix/config_form.go
-cmd/guix/config.go
-cmd/guix/util.go
-cmd/guix/consts.go
-
 cmd/gui/DebFind.go
 cmd/gui/app.go
 cmd/gui/actions.go
