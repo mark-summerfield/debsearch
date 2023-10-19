@@ -1,5 +1,5 @@
 #!/bin/bash
-clc -s -e debsearch_test.go
+clc -e debsearch_test.go
 cat Version.dat
 go mod tidy
 go fmt .
