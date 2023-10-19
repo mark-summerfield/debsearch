@@ -25,35 +25,35 @@ func NewQuery() *Query {
 		Words: gset.New[string]()}
 }
 
-func (me *Query) SelectFrom(model *Model) []*pkg {
-	matched := gset.New[*pkg]()
-	for _, pkg := range model.Packages {
-		if me.Match(pkg) {
-			matched.Add(pkg)
+func (me *Query) SelectFrom(model *Model) []*deb {
+	matched := gset.New[*deb]()
+	for _, deb := range model.Debs {
+		if me.Match(deb) {
+			matched.Add(deb)
 		}
 	}
 	slice := matched.ToSlice()
-	slices.SortFunc(slice, func(a, b *pkg) int {
+	slices.SortFunc(slice, func(a, b *deb) int {
 		return cmp.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name))
 	})
 	return slice
 }
 
-func (me *Query) Match(pkg *pkg) bool {
-	if !me.Sections.IsEmpty() && !me.Sections.Contains(pkg.Section) {
+func (me *Query) Match(deb *deb) bool {
+	if !me.Sections.IsEmpty() && !me.Sections.Contains(deb.Section) {
 		return false // no specified section matches
 	}
 	if !me.Tags.IsEmpty() {
-		intersection := me.Tags.Intersection(pkg.Tags)
+		intersection := me.Tags.Intersection(deb.Tags)
 		if intersection.IsEmpty() {
 			return false // no tags match
 		}
-		if me.TagsAnd && !me.Tags.IsSubsetOf(pkg.Tags) {
+		if me.TagsAnd && !me.Tags.IsSubsetOf(deb.Tags) {
 			return false // not all tags match
 		}
 	}
 	if !me.Words.IsEmpty() {
-		words := pkg.Words()
+		words := deb.Words()
 		intersection := me.Words.Intersection(words)
 		if intersection.IsEmpty() {
 			return false // no words match

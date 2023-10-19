@@ -32,7 +32,7 @@ func main() {
 		search(config, model, elapsed)
 	} else if config.verbose {
 		fmt.Printf("searched %s pkgs in %s.\n",
-			gong.Commas(len(model.Packages)),
+			gong.Commas(len(model.Debs)),
 			elapsed)
 	}
 }
@@ -91,14 +91,14 @@ func search(config *Config, model ds.Model, elapsed time.Duration) {
 	if len(matches) == 0 {
 		fmt.Printf(
 			"searched %s pkgs in %s; no matching packages found.\n",
-			gong.Commas(len(model.Packages)), elapsed)
+			gong.Commas(len(model.Debs)), elapsed)
 	} else {
-		for _, pkg := range matches {
-			fmt.Printf("* %s\n", pkg)
+		for _, deb := range matches {
+			fmt.Printf("* %s\n", deb)
 		}
 		if config.verbose {
 			fmt.Printf("found %s/%s pkgs in %s\n",
-				gong.Commas(len(matches)), gong.Commas(len(model.Packages)),
+				gong.Commas(len(matches)), gong.Commas(len(model.Debs)),
 				elapsed)
 		}
 	}

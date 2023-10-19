@@ -4,12 +4,12 @@
 package debsearch
 
 type FilePair struct {
-	Pkg  string
-	I18n string
+	Packages string
+	I18n     string
 }
 
-func NewFilePair(pkg, i18n string) FilePair {
-	return FilePair{pkg, i18n}
+func NewFilePair(packages, i18n string) FilePair {
+	return FilePair{packages, i18n}
 }
 
 func StdFilePairs(arc string) []FilePair {

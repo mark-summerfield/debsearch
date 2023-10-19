@@ -79,16 +79,16 @@ func (me *App) makeQuery() *ds.Query {
 }
 
 func (me *App) updateResults(query *ds.Query) {
-	pkgs := query.SelectFrom(me.model)
-	me.updatePackagesLabel(len(pkgs))
-	if len(pkgs) == 0 {
+	debs := query.SelectFrom(me.model)
+	me.updatePackagesLabel(len(debs))
+	if len(debs) == 0 {
 		me.onWarn("No matching packages found.")
 	} else {
 		me.updatePackageBrowserWidths()
 		bg := light1
-		for _, pkg := range pkgs {
+		for _, deb := range debs {
 			me.packagesBrowser.Add(fmt.Sprintf("@B%d@.%s\t@B%d@.%s", bg,
-				pkg.Name, bg, pkg.ShortDesc))
+				deb.Name, bg, deb.ShortDesc))
 			if bg == light1 {
 				bg = light2
 			} else {
@@ -124,12 +124,12 @@ func (me *App) onSelectPackage() {
 }
 
 func (me *App) showDescription(name string) {
-	if pkg, ok := me.model.Packages[name]; ok {
+	if deb, ok := me.model.Debs[name]; ok {
 		me.descView.SetValue(fmt.Sprintf(descTemplate,
-			pkg.Url, html.EscapeString(pkg.Name),
-			html.EscapeString(pkg.Version), ds.HumanSize(pkg.Size),
-			html.EscapeString(pkg.ShortDesc),
-			html.EscapeString(pkg.LongDesc)))
+			deb.Url, html.EscapeString(deb.Name),
+			html.EscapeString(deb.Version), ds.HumanSize(deb.Size),
+			html.EscapeString(deb.ShortDesc),
+			html.EscapeString(deb.LongDesc)))
 	}
 }
 

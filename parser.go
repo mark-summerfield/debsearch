@@ -38,7 +38,7 @@ func (me *parser) parse(filepairs ...FilePair) (Model, error) {
 		wg.Add(1)
 		go func(i int, pair FilePair) {
 			defer wg.Done()
-			me.readPackages(pair.Pkg)
+			me.readPackages(pair.Packages)
 		}(i, pair)
 		if pair.I18n != "" {
 			wg.Add(1)
@@ -50,8 +50,8 @@ func (me *parser) parse(filepairs ...FilePair) (Model, error) {
 	}
 	wg.Wait()
 	for name, longDesc := range me.descForPkgs { // merge
-		if pkg, ok := me.model.Packages[name]; ok {
-			pkg.LongDesc = longDesc
+		if deb, ok := me.model.Debs[name]; ok {
+			deb.LongDesc = longDesc
 		}
 	}
 	return me.model, me.err
@@ -66,8 +66,8 @@ func (me *parser) readPackages(filename string) {
 	} else {
 		me.modelMutex.Lock()
 		defer me.modelMutex.Unlock()
-		for name, pkg := range model.Packages {
-			me.model.Packages[name] = pkg
+		for name, deb := range model.Debs {
+			me.model.Debs[name] = deb
 		}
 		for section, count := range model.SectionsAndCounts {
 			me.model.SectionsAndCounts[section] += count
@@ -96,7 +96,7 @@ func readPackages(filename string) (Model, error) {
 	}
 	defer file.Close()
 	state := &parseState{}
-	pkg := NewPkg()
+	deb := NewDeb()
 	reader := bufio.NewReader(file)
 	for {
 		line, err := reader.ReadString('\n')
@@ -111,65 +111,65 @@ func readPackages(filename string) (Model, error) {
 		}
 		if strings.HasPrefix(line, packagePrefix) {
 			state.Clear()
-			if pkg.IsValid() {
-				model.Packages[pkg.Name] = pkg.Copy()
+			if deb.IsValid() {
+				model.Debs[deb.Name] = deb.Copy()
 			}
-			pkg.Clear()
-			pkg.Name = strings.TrimSpace(line[packagePrefixLen:])
+			deb.Clear()
+			deb.Name = strings.TrimSpace(line[packagePrefixLen:])
 		} else if strings.HasPrefix(line, " ") {
 			if state.inTags {
-				addTags(pkg, line, &model)
+				addTags(deb, line, &model)
 			} else if state.inDesc {
-				pkg.LongDesc += getDesc(line)
+				deb.LongDesc += getDesc(line)
 			} else {
 				state.Clear()
 			}
 		} else {
-			state.Update(maybeAddKeyValue(pkg, line, &model))
+			state.Update(maybeAddKeyValue(deb, line, &model))
 		}
 	}
-	if pkg.IsValid() {
-		model.Packages[pkg.Name] = pkg.Copy()
+	if deb.IsValid() {
+		model.Debs[deb.Name] = deb.Copy()
 	}
 	return model, nil
 }
 
-func addTags(pkg *pkg, line string, model *Model) {
+func addTags(deb *deb, line string, model *Model) {
 	for _, item := range strings.Split(line, ",") {
 		item = strings.TrimSpace(item)
 		if item != "" {
 			item = strings.ReplaceAll(item, "::", "/")
-			pkg.Tags.Add(item)
+			deb.Tags.Add(item)
 			model.TagsAndCounts[item]++
 		}
 	}
 }
 
-func maybeAddKeyValue(pkg *pkg, line string, model *Model) (bool, bool) {
+func maybeAddKeyValue(deb *deb, line string, model *Model) (bool, bool) {
 	if key, value, found := strings.Cut(line, ":"); found {
 		key = strings.TrimSpace(key)
 		value = strings.TrimSpace(value)
 		if value != "" {
 			switch key {
 			case "Description":
-				pkg.ShortDesc = value
+				deb.ShortDesc = value
 				return false, true
 			case "Homepage":
-				pkg.Url = value
+				deb.Url = value
 			case "Installed-Size":
-				pkg.Size = gong.StrToInt(value, 0)
+				deb.Size = gong.StrToInt(value, 0)
 			case "Size": // download size
-				if pkg.Size == 0 {
-					pkg.Size = gong.StrToInt(value, 0)
+				if deb.Size == 0 {
+					deb.Size = gong.StrToInt(value, 0)
 				}
 			case "Section":
-				pkg.Section = value
+				deb.Section = value
 				model.SectionsAndCounts[value]++
 			case "Tag":
-				addTags(pkg, value, model)
+				addTags(deb, value, model)
 				return true, false
 			case "Version":
-				pkg.Version = value
+				deb.Version = value
 			}
 		}
 	}

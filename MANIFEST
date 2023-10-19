@@ -1,5 +1,5 @@
 model.go
-pkg.go
+deb.go
 filepair.go
 query.go
 parser.go

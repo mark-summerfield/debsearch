@@ -18,7 +18,7 @@ func stdFilePairs(arc string, withDescriptions bool) []FilePair {
 			if !strings.Contains(pkgFile, "i386") {
 				descFile := ""
 				if withDescriptions {
-					descFile = descFileForPkgFile(pkgFile)
+					descFile = descFileForPackageFile(pkgFile)
 				}
 				pairs = append(pairs, NewFilePair(pkgFile, descFile))
 			}
@@ -27,7 +27,7 @@ func stdFilePairs(arc string, withDescriptions bool) []FilePair {
 	return pairs
 }
 
-func descFileForPkgFile(filename string) string {
+func descFileForPackageFile(filename string) string {
 	if prefix, _, found := strings.Cut(filename, "_binary"); found {
 		return prefix + "_i18n_Translation-en"
 	}

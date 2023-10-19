@@ -49,7 +49,7 @@ func (me *App) loadPackages() {
 	} else {
 		me.model = &model
 		me.onHtmlMessage(fmt.Sprintf(loadTemplate,
-			gong.Commas(len(model.Packages))))
+			gong.Commas(len(model.Debs))))
 		me.populateSections()
 		me.populateTags()
 	}

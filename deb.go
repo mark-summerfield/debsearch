@@ -11,7 +11,7 @@ import (
 	"github.com/mark-summerfield/gset"
 )
 
-type pkg struct {
+type deb struct {
 	Name      string
 	Version   string
 	Size      int
@@ -22,15 +22,15 @@ type pkg struct {
 	LongDesc  string
 }
 
-func NewPkg() *pkg { return &pkg{Tags: gset.New[string]()} }
+func NewDeb() *deb { return &deb{Tags: gset.New[string]()} }
 
-func (me *pkg) Copy() *pkg {
-	return &pkg{Name: me.Name, Version: me.Version, Size: me.Size,
+func (me *deb) Copy() *deb {
+	return &deb{Name: me.Name, Version: me.Version, Size: me.Size,
 		Url: me.Url, Section: me.Section, Tags: me.Tags.Copy(),
 		ShortDesc: me.ShortDesc, LongDesc: me.LongDesc}
 }
 
-func (me *pkg) Clear() {
+func (me *deb) Clear() {
 	me.Name = ""
 	me.Version = ""
 	me.Size = 0
@@ -41,12 +41,12 @@ func (me *pkg) Clear() {
 	me.LongDesc = ""
 }
 
-func (me *pkg) IsValid() bool {
+func (me *deb) IsValid() bool {
 	return me.Name != "" && me.Version != "" && me.Size > 0 &&
 		me.Section != "" && me.ShortDesc != ""
 }
 
-func (me *pkg) Words() gset.Set[string] {
+func (me *deb) Words() gset.Set[string] {
 	rx := regexp.MustCompile(`\W+`)
 	words := gset.New[string]()
 	for _, text := range []string{me.Name, me.ShortDesc, me.LongDesc} {
@@ -58,7 +58,7 @@ func (me *pkg) Words() gset.Set[string] {
 	return words
 }
 
-func (me *pkg) String() string {
+func (me *deb) String() string {
 	return fmt.Sprintf("%s v%s %s %q %s", me.Name, me.Version,
 		HumanSize(me.Size), me.ShortDesc, me.Url)
 }

@@ -4,13 +4,13 @@
 package debsearch
 
 type Model struct {
-	Packages          map[string]*pkg
+	Debs              map[string]*deb
 	SectionsAndCounts map[string]int
 	TagsAndCounts     map[string]int
 }
 
 func newModel() Model {
-	return Model{Packages: map[string]*pkg{},
+	return Model{Debs: map[string]*deb{},
 		SectionsAndCounts: map[string]int{},
 		TagsAndCounts:     map[string]int{}}
 }
