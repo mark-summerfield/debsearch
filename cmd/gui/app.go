@@ -117,8 +117,6 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	x := 0
 	hbox := gui.MakeHBox(x, y, width, buttonHeight)
 	hbox.SetBox(fltk.UP_FRAME)
-	pad := fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // left pad
-	hbox.Fixed(pad, 1)
 	findButton := makeButton(x, " &Find", iconSvg, me.onFind)
 	hbox.Fixed(findButton, buttonWidth)
 	x += buttonWidth
@@ -135,8 +133,6 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 	x += buttonWidth
 	quitButton := makeButton(x, " &Quit", quitSvg, me.onQuit)
 	hbox.Fixed(quitButton, buttonWidth)
-	pad = fltk.NewBox(fltk.FLAT_BOX, x, 0, 1, buttonHeight) // right pad
-	hbox.Fixed(pad, 1)
 	hbox.End()
 	return hbox
 }

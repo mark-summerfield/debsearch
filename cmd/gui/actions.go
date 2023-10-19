@@ -65,7 +65,10 @@ func (me *App) makeQuery() *ds.Query {
 	if me.incNonFreeCheckbox.Value() {
 		for _, section := range sections {
 			if !strings.Contains(section, "/") {
-				query.Sections.Add(nonfreePrefix + section)
+				nonfreeSection := nonfreePrefix + section
+				if _, ok := me.model.SectionsAndCounts[nonfreeSection]; ok {
+					query.Sections.Add(nonfreeSection) // add if it exists
+				}
 			}
 		}
 	}

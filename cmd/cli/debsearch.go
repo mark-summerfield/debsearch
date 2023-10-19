@@ -32,8 +32,7 @@ func main() {
 		search(config, model, elapsed)
 	} else if config.verbose {
 		fmt.Printf("searched %s pkgs in %s.\n",
-			gong.Commas(len(model.Debs)),
-			elapsed)
+			gong.Commas(len(model.Debs)), elapsed)
 	}
 }
 

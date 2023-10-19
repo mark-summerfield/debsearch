@@ -16,19 +16,20 @@ import (
 )
 
 type parser struct {
-	model            Model
-	modelMutex       sync.Mutex
-	err              error
-	errMutex         sync.Mutex
-	descForPkgs      map[string]string
-	descForPkgsMutex sync.Mutex
+	model                Model
+	modelMutex           sync.Mutex
+	err                  error
+	errMutex             sync.Mutex
+	descForPackages      map[string]string
+	descForPackagesMutex sync.Mutex
 }
 
 func parse(filepairs ...FilePair) (Model, error) {
 	if len(filepairs) == 0 {
 		return Model{}, Err102
 	}
-	parser := &parser{model: newModel(), descForPkgs: map[string]string{}}
+	parser := &parser{model: newModel(),
+		descForPackages: map[string]string{}}
 	return parser.parse(filepairs...)
 }
 
@@ -49,7 +50,7 @@ func (me *parser) parse(filepairs ...FilePair) (Model, error) {
 		}
 	}
 	wg.Wait()
-	for name, longDesc := range me.descForPkgs { // merge
+	for name, longDesc := range me.descForPackages { // merge
 		if deb, ok := me.model.Debs[name]; ok {
 			deb.LongDesc = longDesc
 		}
@@ -79,11 +80,12 @@ func (me *parser) readPackages(filename string) {
 }
 
 func (me *parser) readDescriptions(filename string) {
-	if descForPkgs := readDescriptions(filename); len(descForPkgs) > 0 {
-		me.descForPkgsMutex.Lock()
-		defer me.descForPkgsMutex.Unlock()
-		for name, desc := range descForPkgs {
-			me.descForPkgs[name] = desc
+	if descForPackages := readDescriptions(filename); len(
+		descForPackages) > 0 {
+		me.descForPackagesMutex.Lock()
+		defer me.descForPackagesMutex.Unlock()
+		for name, desc := range descForPackages {
+			me.descForPackages[name] = desc
 		}
 	}
 }
@@ -177,10 +179,10 @@ func maybeAddKeyValue(deb *deb, line string, model *Model) (bool, bool) {
 }
 
 func readDescriptions(filename string) map[string]string {
-	descForPkg := map[string]string{}
+	descForPackage := map[string]string{}
 	file, err := os.Open(filename)
 	if err != nil {
-		return descForPkg
+		return descForPackage
 	}
 	defer file.Close()
 	name := ""
@@ -196,7 +198,7 @@ func readDescriptions(filename string) map[string]string {
 		}
 		if strings.HasPrefix(line, packagePrefix) {
 			if name != "" && longDesc != "" {
-				descForPkg[name] = longDesc
+				descForPackage[name] = longDesc
 			}
 			name = strings.TrimSpace(line[packagePrefixLen:])
 			longDesc = ""
@@ -205,9 +207,9 @@ func readDescriptions(filename string) map[string]string {
 		}
 	}
 	if name != "" && longDesc != "" {
-		descForPkg[name] = strings.TrimRight(longDesc, asciiWs)
+		descForPackage[name] = strings.TrimRight(longDesc, asciiWs)
 	}
-	return descForPkg
+	return descForPackage
 }
 
 func getDesc(line string) string {

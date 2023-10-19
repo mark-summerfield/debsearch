@@ -7,7 +7,7 @@ util.go
 consts.go
 cmd/cli/debsearch.go
 
-# TODO change Sections & Tags from Browsers to Trees
+# TODO change Sections & Tags from Browsers to Trees?
 cmd/gui/DebFind.go
 cmd/gui/app.go
 cmd/gui/actions.go
