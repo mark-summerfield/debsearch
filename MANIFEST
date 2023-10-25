@@ -5,25 +5,25 @@ query.go
 parser.go
 util.go
 consts.go
-cmd/cli/debsearch.go
+cmd/debsearch/debsearch.go
 
 # TODO change Sections & Tags from Browsers to Trees?
-cmd/gui/DebFind.go
-cmd/gui/app.go
-cmd/gui/actions.go
-cmd/gui/config_form.go
-cmd/gui/config.go
-cmd/gui/util.go
-cmd/gui/consts.go
+cmd/DebFind/DebFind.go
+cmd/DebFind/app.go
+cmd/DebFind/actions.go
+cmd/DebFind/config_form.go
+cmd/DebFind/config.go
+cmd/DebFind/util.go
+cmd/DebFind/consts.go
 
-cmd/gui/help.html
-cmd/gui/gui/about_form.go
-cmd/gui/gui/about_html_linux.go
-cmd/gui/gui/ask_form.go
-cmd/gui/gui/info_form.go
-cmd/gui/gui/util.go
-cmd/gui/gui/consts.go
-cmd/gui/gui/question.svg
+cmd/DebFind/help.html
+cmd/DebFind/gui/about_form.go
+cmd/DebFind/gui/about_html_linux.go
+cmd/DebFind/gui/ask_form.go
+cmd/DebFind/gui/info_form.go
+cmd/DebFind/gui/util.go
+cmd/DebFind/gui/consts.go
+cmd/DebFind/gui/question.svg
 
 README.md
 

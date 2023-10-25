@@ -1,3 +1,3 @@
-cd cmd/gui
+cd cmd/DebFind
 go run . $@ &
 cd ../..

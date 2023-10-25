@@ -6,7 +6,7 @@ package main
 import (
 	"strings"
 
-	"github.com/mark-summerfield/debsearch/cmd/gui/gui"
+	"github.com/mark-summerfield/debsearch/cmd/DebFind/gui"
 	"github.com/pwiecz/go-fltk"
 )
 
