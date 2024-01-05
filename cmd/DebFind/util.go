@@ -41,7 +41,7 @@ func selectedCount(browser *fltk.MultiBrowser) int {
 }
 
 func padBox(parent *fltk.Flex, size int) {
-	pad := fltk.NewBox(fltk.FLAT_BOX, 0, 0, gui.Margin, gui.ButtonHeight())
+	pad := fltk.NewBox(fltk.FLAT_BOX, 0, 0, gui.Margin, gui.ButtonHeight)
 	parent.Fixed(pad, gui.Margin)
 }
 
@@ -52,9 +52,8 @@ func divider(parent *fltk.Flex) {
 }
 
 func makeButton(x int, text, icon string, callback func()) *fltk.Button {
-	buttonHeight := gui.ButtonHeight()
-	buttonWidth := ((gui.LabelWidth() * 5) / 3) + (2 * gui.Pad)
-	button := fltk.NewButton(x, 0, buttonWidth, buttonHeight, text)
+	buttonWidth := ((gui.LabelWidth * 5) / 3) + (2 * gui.Pad)
+	button := fltk.NewButton(x, 0, buttonWidth, gui.ButtonHeight, text)
 	button.SetImage(gui.ImageForSvgText(icon, iconSize))
 	button.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
 	button.SetCallback(callback)

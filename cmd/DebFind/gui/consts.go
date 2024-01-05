@@ -6,9 +6,11 @@ package gui
 import _ "embed"
 
 const (
-	Pad    = 5
-	Margin = 3
-	Border = 8
+	Pad          = 5
+	Margin       = 3
+	Border       = 8
+	ButtonHeight = 36
+	LabelWidth   = 84
 )
 
 //go:embed question.svg

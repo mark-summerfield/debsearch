@@ -18,27 +18,26 @@ func MakeInfoForm(title, appName, descHtml, iconSvg string, width, height,
 	window.SetLabel(fmt.Sprintf("%s — %s", title, appName))
 	AddWindowIcon(window, iconSvg)
 	buttonWidth := ButtonWidth()
-	buttonHeight := ButtonHeight()
 	returnButtonWidth := ReturnButtonWidth()
 	vbox := MakeVBox(0, 0, width, height)
-	view := fltk.NewHelpView(0, 0, width, height-buttonHeight)
+	view := fltk.NewHelpView(0, 0, width, height-ButtonHeight)
 	view.TextFont(fltk.HELVETICA)
 	view.TextSize(textSize)
 	view.SetValue(descHtml)
-	y := height - buttonHeight
-	hbox := MakeHBox(0, y, width, buttonHeight)
+	y := height - ButtonHeight
+	hbox := MakeHBox(0, y, width, ButtonHeight)
 	spacerWidth := (width - returnButtonWidth) / 2
-	leftSpacer := MakeHBox(0, y, spacerWidth, buttonHeight)
+	leftSpacer := MakeHBox(0, y, spacerWidth, ButtonHeight)
 	leftSpacer.End()
-	button := fltk.NewReturnButton(0, 0, buttonHeight, returnButtonWidth,
+	button := fltk.NewReturnButton(0, 0, ButtonHeight, returnButtonWidth,
 		"&Close")
 	button.SetCallback(func() { window.Destroy() })
 	righttSpacer := MakeHBox(spacerWidth+returnButtonWidth, y, spacerWidth,
-		buttonHeight)
+		ButtonHeight)
 	righttSpacer.End()
 	hbox.Fixed(button, buttonWidth)
 	hbox.End()
-	vbox.Fixed(hbox, buttonHeight)
+	vbox.Fixed(hbox, ButtonHeight)
 	vbox.End()
 	window.End()
 	window.SetEventHandler(func(event fltk.Event) bool {

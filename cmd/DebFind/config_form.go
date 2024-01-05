@@ -25,7 +25,7 @@ func newConfigForm(app *App) configForm {
 	form.Window = fltk.NewWindow(form.width, form.height)
 	form.Window.SetLabel("Configure — " + appName)
 	gui.AddWindowIcon(form.Window, iconSvg)
-	form.labelWidth, _ = fltk.MeasureText("ArchitectureW", false)
+	form.labelWidth = (gui.LabelWidth * 5) / 4
 	form.makeWidgets()
 	form.Window.End()
 	return form
@@ -70,12 +70,10 @@ func (me *configForm) makeScaleSpinner() *fltk.Spinner {
 }
 
 func (me *configForm) makeTextSizeRow() *fltk.Flex {
-	buttonHeight := gui.ButtonHeight()
-	labelWidth := gui.LabelWidth()
 	hbox := gui.MakeHBox(0, 0, me.width, rowHeight)
-	sizeLabel := gui.MakeAccelLabel(me.labelWidth, buttonHeight,
+	sizeLabel := gui.MakeAccelLabel(me.labelWidth, gui.ButtonHeight,
 		"&Text Size")
-	spinner := fltk.NewSpinner(0, 0, labelWidth, buttonHeight)
+	spinner := fltk.NewSpinner(0, 0, gui.LabelWidth, gui.ButtonHeight)
 	spinner.SetTooltip("Set the size of the about and help texts.")
 	spinner.SetType(fltk.SPINNER_INT_INPUT)
 	spinner.SetMinimum(10)
@@ -91,11 +89,10 @@ func (me *configForm) makeTextSizeRow() *fltk.Flex {
 }
 
 func (me *configForm) makeArcRow() *fltk.Flex {
-	buttonHeight := gui.ButtonHeight()
-	hbox := gui.MakeHBox(0, 0, me.width, buttonHeight)
-	arcLabel := gui.MakeAccelLabel(me.labelWidth, buttonHeight,
+	hbox := gui.MakeHBox(0, 0, me.width, gui.ButtonHeight)
+	arcLabel := gui.MakeAccelLabel(me.labelWidth, gui.ButtonHeight,
 		"&Architecture")
-	me.arcChoice = fltk.NewChoice(0, 0, gui.LabelWidth(), buttonHeight)
+	me.arcChoice = fltk.NewChoice(0, 0, gui.LabelWidth, gui.ButtonHeight)
 	current := 0
 	for i, name := range strings.Fields(ds.Arcs) {
 		me.arcChoice.Add(name, nil)
@@ -112,16 +109,15 @@ func (me *configForm) makeArcRow() *fltk.Flex {
 
 func (me *configForm) makeButtonRow() *fltk.Flex {
 	buttonWidth := gui.ButtonWidth()
-	buttonHeight := gui.ButtonHeight()
 	hbox := gui.MakeHBox(0, 0, me.width, rowHeight)
 	spacerWidth := (me.width - buttonWidth) / 2
-	leftSpacer := gui.MakeHBox(0, 0, spacerWidth, buttonHeight)
+	leftSpacer := gui.MakeHBox(0, 0, spacerWidth, gui.ButtonHeight)
 	leftSpacer.End()
-	button := fltk.NewReturnButton(0, 0, buttonHeight, buttonWidth,
+	button := fltk.NewReturnButton(0, 0, gui.ButtonHeight, buttonWidth,
 		"&Close")
 	button.SetCallback(me.onClose)
 	righttSpacer := gui.MakeHBox(spacerWidth+buttonWidth, 0, spacerWidth,
-		buttonHeight)
+		gui.ButtonHeight)
 	righttSpacer.End()
 	hbox.End()
 	return hbox

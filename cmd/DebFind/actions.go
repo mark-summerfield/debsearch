@@ -106,8 +106,7 @@ func (me *App) updateResults(query *ds.Query) {
 
 func (me *App) updatePackageBrowserWidths() {
 	width := me.packagesBrowser.W()
-	nWidth, _ := fltk.MeasureText("n", false)
-	left := min(nWidth*20, width/2)
+	left := min(200, width/2)
 	me.packagesBrowser.SetColumnWidths(left, width-left)
 }
 

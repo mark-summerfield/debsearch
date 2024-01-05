@@ -97,14 +97,12 @@ func (me *App) makeMainWindow() {
 func (me *App) makeWidgets() {
 	width := me.Window.W()
 	height := me.Window.H()
-	buttonHeight := gui.ButtonHeight()
 	vbox := gui.MakeVBox(0, 0, width, height)
 	hbox := me.makeButtonPanel(width, 0)
-	vbox.Fixed(hbox, buttonHeight+(2*gui.Margin))
-	tileHeight := height - ((buttonHeight * 3) / 2)
+	vbox.Fixed(hbox, gui.ButtonHeight+(2*gui.Margin))
+	tileHeight := height - ((gui.ButtonHeight * 3) / 2)
 	tile := fltk.NewTile(0, 0, width, tileHeight)
-	nWidth, _ := fltk.MeasureText("n", false)
-	leftWidth := min(nWidth*36, width/2)
+	leftWidth := min(360, width/2)
 	me.makeCriteriaPanel(0, 0, leftWidth, tileHeight)
 	me.makeResultPanel(leftWidth, 0, width-leftWidth, tileHeight)
 	tile.End()
@@ -113,15 +111,14 @@ func (me *App) makeWidgets() {
 }
 
 func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
-	buttonHeight := gui.ButtonHeight()
-	buttonWidth := ((gui.LabelWidth() * 5) / 3) + (2 * gui.Pad)
+	buttonWidth := ((gui.LabelWidth * 5) / 3) + (2 * gui.Pad)
 	x := 0
-	hbox := gui.MakeHBox(x, y, width, buttonHeight)
+	hbox := gui.MakeHBox(x, y, width, gui.ButtonHeight)
 	hbox.SetBox(fltk.UP_FRAME)
 	findButton := makeButton(x, " &Find", iconSvg, me.onFind)
 	hbox.Fixed(findButton, buttonWidth)
 	x += buttonWidth
-	fltk.NewBox(fltk.FLAT_BOX, x, 0, buttonWidth, buttonHeight)
+	fltk.NewBox(fltk.FLAT_BOX, x, 0, buttonWidth, gui.ButtonHeight)
 	x += buttonWidth
 	configButton := makeButton(x, " &Options…", configSvg, me.onConfigure)
 	hbox.Fixed(configButton, buttonWidth)
@@ -139,9 +136,8 @@ func (me *App) makeButtonPanel(width, y int) *fltk.Flex {
 }
 
 func (me *App) makeCriteriaPanel(x, y, width, height int) {
-	buttonHeight := gui.ButtonHeight()
 	tile := fltk.NewTile(x, y, width, height)
-	height = (height / 2) - buttonHeight
+	height = (height / 2) - gui.ButtonHeight
 	y = 0
 	me.makeSectionsPanel(x, y, width, height)
 	y += height
@@ -152,29 +148,29 @@ func (me *App) makeCriteriaPanel(x, y, width, height int) {
 }
 
 func (me *App) makeSectionsPanel(x, y, width, height int) {
-	buttonHeight := gui.ButtonHeight()
-	buttonWidth := (gui.LabelWidth() * 5) / 4
-	labelWidth := (gui.LabelWidth() * 3) / 2
+	buttonWidth := (gui.LabelWidth * 5) / 4
+	labelWidth := (gui.LabelWidth * 3) / 2
 	vbox := gui.MakeVBox(x, y, width, height)
-	me.sectionsLabel = gui.MakeAccelLabel(labelWidth, buttonHeight,
+	me.sectionsLabel = gui.MakeAccelLabel(labelWidth, gui.ButtonHeight,
 		"&Sections")
 	vbox.Fixed(me.sectionsLabel, gui.LabelHeight())
-	me.sectionsBrowser = fltk.NewMultiBrowser(0, buttonHeight, width,
+	me.sectionsBrowser = fltk.NewMultiBrowser(0, gui.ButtonHeight, width,
 		height)
 	me.sectionsBrowser.SetCallback(func() {
 		me.updateSectionsLabel(selectedCount(me.sectionsBrowser))
 	})
 	me.sectionsLabel.SetCallback(func() { me.sectionsBrowser.TakeFocus() })
-	hbox := gui.MakeHBox(x, height-(2*buttonHeight), width, buttonHeight)
+	hbox := gui.MakeHBox(x, height-(2*gui.ButtonHeight), width,
+		gui.ButtonHeight)
 	selectAllSectionsButton := fltk.NewButton(0, 0, buttonWidth,
-		buttonHeight, "S&elect All")
+		gui.ButtonHeight, "S&elect All")
 	selectAllSectionsButton.SetCallback(func() {
 		selectOrClear(me.sectionsBrowser, true)
 		me.updateSectionsLabel(me.sectionsBrowser.Size())
 	})
 	hbox.Fixed(selectAllSectionsButton, buttonWidth)
 	clearSectionsButton := fltk.NewButton(labelWidth, 0, buttonWidth,
-		buttonHeight, "&Clear All")
+		gui.ButtonHeight, "&Clear All")
 	clearSectionsButton.SetCallback(func() {
 		selectOrClear(me.sectionsBrowser, false)
 		me.updateSectionsLabel(0)
@@ -182,10 +178,10 @@ func (me *App) makeSectionsPanel(x, y, width, height int) {
 	hbox.Fixed(clearSectionsButton, buttonWidth)
 	padBox(hbox, gui.Margin)
 	me.incNonFreeCheckbox = fltk.NewCheckButton(labelWidth, 0, labelWidth,
-		buttonHeight, "Pl&us Non-Free")
+		gui.ButtonHeight, "Pl&us Non-Free")
 	me.incNonFreeCheckbox.SetValue(me.config.IncludeNonFreeSections)
 	hbox.End()
-	vbox.Fixed(hbox, buttonHeight)
+	vbox.Fixed(hbox, gui.ButtonHeight)
 	vbox.End()
 }
 
@@ -195,44 +191,44 @@ func (me *App) updateSectionsLabel(count int) {
 }
 
 func (me *App) makeTagsPanel(x, y, width, height int) {
-	buttonHeight := gui.ButtonHeight()
-	buttonWidth := (gui.LabelWidth() * 5) / 4
-	labelWidth := (gui.LabelWidth() * 3) / 2
+	buttonWidth := (gui.LabelWidth * 5) / 4
+	labelWidth := (gui.LabelWidth * 3) / 2
 	vbox := gui.MakeVBox(x, y, width, height)
 	divider(vbox)
-	me.tagsLabel = gui.MakeAccelLabel(labelWidth, buttonHeight, "&Tags")
+	me.tagsLabel = gui.MakeAccelLabel(labelWidth, gui.ButtonHeight, "&Tags")
 	vbox.Fixed(me.tagsLabel, gui.LabelHeight())
-	me.tagsBrowser = fltk.NewMultiBrowser(0, buttonHeight, width,
+	me.tagsBrowser = fltk.NewMultiBrowser(0, gui.ButtonHeight, width,
 		height)
 	me.tagsBrowser.SetCallback(func() {
 		me.updateTagsLabel(selectedCount(me.tagsBrowser))
 	})
 	me.tagsLabel.SetCallback(func() { me.tagsBrowser.TakeFocus() })
-	hbox := gui.MakeHBox(x, height-(2*buttonHeight), width, buttonHeight)
+	hbox := gui.MakeHBox(x, height-(2*gui.ButtonHeight), width,
+		gui.ButtonHeight)
 	selectAllTagsButton := fltk.NewButton(0, 0, buttonWidth,
-		buttonHeight, "Se&lect All")
+		gui.ButtonHeight, "Se&lect All")
 	selectAllTagsButton.SetCallback(func() {
 		selectOrClear(me.tagsBrowser, true)
 		me.updateTagsLabel(me.tagsBrowser.Size())
 	})
 	hbox.Fixed(selectAllTagsButton, buttonWidth)
 	clearTagsButton := fltk.NewButton(labelWidth, 0, buttonWidth,
-		buttonHeight, "Clea&r All")
+		gui.ButtonHeight, "Clea&r All")
 	clearTagsButton.SetCallback(func() {
 		selectOrClear(me.tagsBrowser, false)
 		me.updateTagsLabel(0)
 	})
 	hbox.Fixed(clearTagsButton, buttonWidth)
 	padBox(hbox, gui.Margin)
-	fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth, buttonHeight, "Match:")
+	fltk.NewBox(fltk.FLAT_BOX, x, 0, labelWidth, gui.ButtonHeight, "Match:")
 	me.tagsMatchAllRadioButton = fltk.NewRadioRoundButton(x, 0, labelWidth,
-		buttonHeight, "&All")
+		gui.ButtonHeight, "&All")
 	me.tagsMatchAllRadioButton.SetValue(me.config.AllTags)
 	me.tagsMatchAnyRadioButton = fltk.NewRadioRoundButton(x, 0, labelWidth,
-		buttonHeight, "A&ny")
+		gui.ButtonHeight, "A&ny")
 	me.tagsMatchAnyRadioButton.SetValue(!me.config.AllTags)
 	hbox.End()
-	vbox.Fixed(hbox, buttonHeight)
+	vbox.Fixed(hbox, gui.ButtonHeight)
 	vbox.End()
 }
 
@@ -242,30 +238,28 @@ func (me *App) updateTagsLabel(count int) {
 }
 
 func (me *App) makeWordsPanel(x, y, width, height int) {
-	buttonHeight := gui.ButtonHeight()
-	labelWidth := gui.LabelWidth()
 	vbox := gui.MakeVBox(x, y, width, height)
 	divider(vbox)
-	hbox := gui.MakeHBox(x, y, width, buttonHeight)
-	wordsLabel := gui.MakeAccelLabel(width, buttonHeight, "&Words:")
+	hbox := gui.MakeHBox(x, y, width, gui.ButtonHeight)
+	wordsLabel := gui.MakeAccelLabel(width, gui.ButtonHeight, "&Words:")
 	wordsLabel.SetCallback(func() { me.wordsInput.TakeFocus() })
-	hbox.Fixed(wordsLabel, labelWidth)
-	me.wordsInput = fltk.NewInput(x, y, width, buttonHeight)
+	hbox.Fixed(wordsLabel, gui.LabelWidth)
+	me.wordsInput = fltk.NewInput(x, y, width, gui.ButtonHeight)
 	hbox.End()
-	vbox.Fixed(hbox, buttonHeight)
-	hbox = gui.MakeHBox(x, y, width, buttonHeight)
-	label := gui.MakeAccelLabel(labelWidth, buttonHeight, "&Match:")
-	hbox.Fixed(label, labelWidth)
-	me.wordsMatchAllRadioButton = fltk.NewRadioRoundButton(x, 0, labelWidth,
-		buttonHeight, "All")
+	vbox.Fixed(hbox, gui.ButtonHeight)
+	hbox = gui.MakeHBox(x, y, width, gui.ButtonHeight)
+	label := gui.MakeAccelLabel(gui.LabelWidth, gui.ButtonHeight, "&Match:")
+	hbox.Fixed(label, gui.LabelWidth)
+	me.wordsMatchAllRadioButton = fltk.NewRadioRoundButton(x, 0,
+		gui.LabelWidth, gui.ButtonHeight, "All")
 	me.wordsMatchAllRadioButton.SetValue(me.config.AllWords)
 	label.SetCallback(func() { me.wordsMatchAllRadioButton.TakeFocus() })
-	hbox.Fixed(me.wordsMatchAllRadioButton, labelWidth)
-	me.wordsMatchAnyRadioButton = fltk.NewRadioRoundButton(x, 0, labelWidth,
-		buttonHeight, "An&y")
+	hbox.Fixed(me.wordsMatchAllRadioButton, gui.LabelWidth)
+	me.wordsMatchAnyRadioButton = fltk.NewRadioRoundButton(x, 0,
+		gui.LabelWidth, gui.ButtonHeight, "An&y")
 	me.wordsMatchAnyRadioButton.SetValue(!me.config.AllWords)
 	hbox.End()
-	vbox.Fixed(hbox, buttonHeight)
+	vbox.Fixed(hbox, gui.ButtonHeight)
 	vbox.End()
 }
 

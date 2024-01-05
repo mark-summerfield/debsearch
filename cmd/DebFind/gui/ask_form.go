@@ -33,7 +33,6 @@ func makeAskForm(title, bodyText, iconSvg string, textSize int, text1,
 	text2, text3 string, result *int) *fltk.Window {
 	const height = 160
 	width := 320
-	buttonHeight := ButtonHeight()
 	buttonWidth := ButtonWidth()
 	if text3 != "" {
 		width += buttonWidth / 2
@@ -42,36 +41,36 @@ func makeAskForm(title, bodyText, iconSvg string, textSize int, text1,
 	window.SetLabel(title)
 	AddWindowIcon(window, iconSvg)
 	vbox := MakeVBox(0, 0, width, height)
-	bodyBox := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, height-buttonHeight)
+	bodyBox := fltk.NewBox(fltk.FLAT_BOX, 0, 0, width, height-ButtonHeight)
 	bodyBox.SetImage(ImageForSvgText(questionSvg, 64))
 	bodyBox.SetAlign(fltk.ALIGN_IMAGE_NEXT_TO_TEXT)
 	bodyBox.SetLabel(bodyText)
 	bodyBox.SetLabelSize(textSize)
-	y := height - (buttonHeight * 3 / 2)
-	hbox := MakeHBox(0, y, width, buttonHeight)
+	y := height - (ButtonHeight * 3 / 2)
+	hbox := MakeHBox(0, y, width, ButtonHeight)
 	var spacerWidth int
 	if text3 == "" {
 		spacerWidth = (width - (2 * buttonWidth)) / 2
 	} else {
 		spacerWidth = (width - (3 * buttonWidth)) / 2
 	}
-	leftSpacer := MakeHBox(0, y, spacerWidth, buttonHeight)
+	leftSpacer := MakeHBox(0, y, spacerWidth, ButtonHeight)
 	leftSpacer.End()
-	button1 := fltk.NewReturnButton(0, 0, buttonHeight, buttonWidth, text1)
+	button1 := fltk.NewReturnButton(0, 0, ButtonHeight, buttonWidth, text1)
 	button1.SetCallback(func() { *result = BUTTON_ONE; window.Destroy() })
 	button1.TakeFocus()
-	button2 := fltk.NewButton(0, 0, buttonHeight, buttonWidth, text2)
+	button2 := fltk.NewButton(0, 0, ButtonHeight, buttonWidth, text2)
 	button2.SetCallback(func() { *result = BUTTON_TWO; window.Destroy() })
 	var button3 *fltk.Button
 	if text3 != "" {
-		button3 = fltk.NewButton(0, 0, buttonHeight, buttonWidth, text3)
+		button3 = fltk.NewButton(0, 0, ButtonHeight, buttonWidth, text3)
 		button3.SetCallback(func() {
 			*result = BUTTON_THREE
 			window.Destroy()
 		})
 	}
 	righttSpacer := MakeHBox(spacerWidth+buttonWidth, y, spacerWidth,
-		buttonHeight)
+		ButtonHeight)
 	righttSpacer.End()
 	hbox.Fixed(button1, buttonWidth)
 	hbox.Fixed(button2, buttonWidth)
@@ -79,7 +78,7 @@ func makeAskForm(title, bodyText, iconSvg string, textSize int, text1,
 		hbox.Fixed(button3, buttonWidth)
 	}
 	hbox.End()
-	vbox.Fixed(hbox, buttonHeight)
+	vbox.Fixed(hbox, ButtonHeight)
 	vbox.End()
 	window.End()
 	return window

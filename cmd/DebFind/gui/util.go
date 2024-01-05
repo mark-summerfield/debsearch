@@ -7,14 +7,8 @@ import (
 	"github.com/pwiecz/go-fltk"
 )
 
-func ButtonHeight() int {
-	_, height := fltk.MeasureText("X", false)
-	return int(float64(height)*2.25) + (2 * Margin)
-}
-
 func ButtonWidth() int {
-	width := LabelWidth()
-	return width + (width / 2)
+	return LabelWidth + (LabelWidth / 2)
 }
 
 func ReturnButtonWidth() int {
@@ -22,17 +16,11 @@ func ReturnButtonWidth() int {
 }
 
 func LabelHeight() int {
-	return (ButtonHeight() * 4) / 5
-}
-
-func LabelWidth() int {
-	width, _ := fltk.MeasureText("X", false)
-	return int(float64(width) * 7.5)
+	return (ButtonHeight * 4) / 5
 }
 
 func ToolbuttonIconSize() int {
-	_, height := fltk.MeasureText("X", false)
-	return (height * 2) - 4
+	return (ButtonHeight * 2) - 4
 }
 
 func AddWindowIcon(window *fltk.Window, svgText string) {
@@ -52,8 +40,7 @@ func ImageForSvgText(svgText string, size int) *fltk.RgbImage {
 }
 
 func MakeToolbutton(svgText string) *fltk.Button {
-	buttonHeight := ButtonHeight()
-	button := fltk.NewButton(0, 0, buttonHeight, buttonHeight, "")
+	button := fltk.NewButton(0, 0, ButtonHeight, ButtonHeight, "")
 	button.ClearVisibleFocus()
 	if image := ImageForSvgText(svgText,
 		ToolbuttonIconSize()); image != nil {
@@ -72,7 +59,7 @@ func MakeAccelLabel(width, height int, label string) *fltk.Button {
 }
 
 func MakeSep(y int, hbox *fltk.Flex) {
-	sep := fltk.NewBox(fltk.THIN_DOWN_BOX, 0, y, Pad, ButtonHeight())
+	sep := fltk.NewBox(fltk.THIN_DOWN_BOX, 0, y, Pad, ButtonHeight)
 	hbox.Fixed(sep, Pad)
 }
 
